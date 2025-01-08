@@ -1,12 +1,11 @@
-import express from 'express'
+
+import app from './app.js'
 import { PORT } from './config.js'
+import { ConnectDb } from './database.js'
 
-const app = express()
+ConnectDb()
 
 
-app.get('/',(req,res)=>{
-    res.send('Hola mundo')
-})
 
 app.listen(PORT,()=>{
     console.log('Server is running in port:',PORT)
