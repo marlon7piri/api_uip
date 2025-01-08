@@ -17,7 +17,7 @@ export const crearJugador = async (req, res) => {
 // Obtener todos los jugadores
 export const obtenerJugadores = async (req, res) => {
   try {
-    const jugadores = await Jugador.find().populate("club", "nombre logo").limit(1);
+    const jugadores = await Jugador.find().populate("club", "nombre logo")
     res.json(jugadores);
   } catch (error) {
     res.status(500).json({ message: error.message });
