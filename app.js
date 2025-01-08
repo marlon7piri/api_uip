@@ -3,9 +3,9 @@ import Routes from './routes/index.routes.js'
 import cors from 'cors'
 
 const app = express()
+app.use(express.json())
+app.use(cors())
 
 Routes(app)
-app.use(cors())
-app.use(express.json())
 
 export default app

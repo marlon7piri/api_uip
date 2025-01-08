@@ -98,6 +98,8 @@ const resetPassword = async (req, res) => {
 const login = async (req, res) => {
   const { username, password } = req.body;
 
+  console.log(username, password)
+
   try {
     const userData = await Users.findOne({ nameUser: username });
 
@@ -406,7 +408,6 @@ export  {
   logout,
   verifyToken,
   resetPassword,
-  
   getUser,
   updateUser,
   deleteUser,
