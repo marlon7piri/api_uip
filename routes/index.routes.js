@@ -4,6 +4,7 @@ import equipos from "./v1/equipos.routes.js"
 import jugadores from "./v1/jugador.routes.js"
 import ofertas from "./v1/ofertas.routes.js"
 import matcher from "./v1/matcher.routes.js"
+import upload from "./v1/upload.routes.js"
 
 export  default (app) => {
   app.use("/api/v1/users", users);
@@ -12,4 +13,5 @@ export  default (app) => {
   app.use("/api/v1/jugadores", jugadores);
   app.use("/api/v1/ofertas", ofertas);
   app.use("/api/v1/matcher", matcher);
+  app.use("/api/v1/upload", upload);
 };
