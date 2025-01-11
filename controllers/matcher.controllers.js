@@ -1,9 +1,9 @@
 // controllers/proximosPartidosController.js
-import  mongoose   from "mongoose"
-import  EquipoModels   from "../models/Equipo.models.js"
-import  ProximosPartidos   from "../models/matcher.models.js"
-import  TorneoModels   from "../models/Torneo.models.js"
-import  { goleadoresTorneo, asistentesTorneo }  from "../utils/actualizacionStaticsTorneo.js"
+import mongoose from "mongoose"
+import EquipoModels from "../models/Equipo.models.js"
+import ProximosPartidos from "../models/matcher.models.js"
+import TorneoModels from "../models/Torneo.models.js"
+import { goleadoresTorneo, asistentesTorneo } from "../utils/actualizacionStaticsTorneo.js"
 
 // Crear un nuevo partido
 export const createPartido = async (req, res) => {
@@ -103,7 +103,7 @@ export const getPartidoById = async (req, res) => {
       }
     }
   ] */
-    export const evaluarPartidos = async (req, res) => {
+export const evaluarPartidos = async (req, res) => {
 
   const { id_local, id_visitante, goles_local, goles_visitante, asistencias_local, asistencias_visitantes, tarjetas_amarillas, tarjetas_rojas, is_draw, torneoId, goleadores, asistentes, partidoId } = req.body
 
@@ -122,6 +122,12 @@ export const getPartidoById = async (req, res) => {
 
     if (!partido) {
       return res.status(400).json({ message: 'partido no encontrado' })
+    }
+
+
+    if(partido.estado == 'finalizado'){
+      return res.status(400).json({ message: 'El partido ya se evaluo' })
+
     }
 
     // Validar que los IDs sean válidos
@@ -151,18 +157,18 @@ export const getPartidoById = async (req, res) => {
 
 
 
-
+    partido.estado = 'finalizado'
 
     await partido.save()
 
 
 
 
-     await goleadoresTorneo(torneo, goleadores)
-     await asistentesTorneo(torneo, asistentes)
+    await goleadoresTorneo(torneo, goleadores)
+    await asistentesTorneo(torneo, asistentes)
 
 
-    
+
 
 
 
@@ -192,7 +198,7 @@ export const getPartidoById = async (req, res) => {
     }
 
     //Hubo un empate
-    if (is_draw) {
+    if (is_draw == true) {
       //estadisticas globales
       equipo_local.estadisticasGlobales.partidos_empatados += 1
       equipo_visitante.estadisticasGlobales.partidos_empatados += 1
@@ -215,6 +221,8 @@ export const getPartidoById = async (req, res) => {
       equipo_visitantefound.estadisticas.goles_contra += goles_local
 
 
+
+      console.log("entre a estadisticas de isdraw")
     }
 
 
@@ -244,9 +252,9 @@ export const getPartidoById = async (req, res) => {
       equipo_visitantefound.estadisticas.partidos_jugados++
       equipo_visitantefound.estadisticas.goles_favor += goles_visitante
       equipo_visitantefound.estadisticas.goles_contra += goles_local
-
       equipo_visitantefound.estadisticas.asistencias += asistencias_visitantes
 
+      console.log("entre a estadisticas de local mayor a visitante")
 
 
 
@@ -276,6 +284,8 @@ export const getPartidoById = async (req, res) => {
       equipo_localfound.estadisticas.goles_favor += goles_local
       equipo_localfound.estadisticas.goles_contra += goles_visitante
       equipo_localfound.estadisticas.asistencias += asistencias_local
+      console.log("entre a estadisticas de visitante  mayor a local")
+
     }
 
     await equipo_local.save()

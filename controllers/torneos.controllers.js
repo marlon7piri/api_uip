@@ -61,9 +61,9 @@ export const  obtenerTorneoPorId = async (req, res) => {
     torneo_especifico.sort((a, b) => b.estadisticasTorneo.estadisticas.puntos - a.estadisticasTorneo.estadisticas.puntos);
 
 
-    res.status(200).json({torneo_especifico,torneo});
+    return res.status(200).json({torneo_especifico,torneo});
   } catch (error) {
-    res.status(500).json({ message: "Error al obtener el torneo", error });
+    return res.status(500).json({ message: "Error al obtener el torneo", error });
   }
 };
 

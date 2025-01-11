@@ -17,6 +17,11 @@ const proximosPartidosSchema = new Schema({
   fecha: { type: Date, required: true },
 
   estadio: { type: String },
+  estado:{
+    type:String,
+    default:'pendiente'
+
+  }
 });
 
 export default mongoose.model("matcher", proximosPartidosSchema);
