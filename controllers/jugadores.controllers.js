@@ -29,7 +29,7 @@ export const obtenerJugadorPorId = async (req, res) => {
   try {
     const jugador = await Jugador.findById(req.params.id).populate(
       "club",
-      "nombre"
+      "nombre logo"
     );
     if (!jugador)
       return res.status(404).json({ message: "Jugador no encontrado" });
