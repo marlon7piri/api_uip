@@ -1,11 +1,10 @@
 // controllers/jugadorController.js
-import   Equipo from "../models/Equipo.models.js"
-import   Jugador from "../models/Jugador.models.js"
+import Equipo from "../models/Equipo.models.js";
+import Jugador from "../models/Jugador.models.js";
 
 // Crear un nuevo jugador
 export const crearJugador = async (req, res) => {
   try {
-
     const jugador = new Jugador(req.body);
     await jugador.save();
     res.status(201).json(jugador);
@@ -16,8 +15,11 @@ export const crearJugador = async (req, res) => {
 
 // Obtener todos los jugadores
 export const obtenerJugadores = async (req, res) => {
+  const { query } = req.query;
   try {
-    const jugadores = await Jugador.find().populate("club", "nombre logo")
+    const jugadores = await Jugador.find(
+      query ? { nombre: { $regex: query, $options: "i" } } : {}
+    ).populate("club", "nombre logo");
     res.json(jugadores);
   } catch (error) {
     res.status(500).json({ message: error.message });
