@@ -114,7 +114,8 @@ export const getPartidoByTorneo = async (req, res) => {
     const partido = await ProximosPartidos.find({ torneo_id: id })
       .populate("local", "nombre logo")
       .populate("visitante", "nombre logo")
-      .populate("torneo_id", "nombre foto");
+      .populate("torneo_id", "nombre foto")
+      .sort({ estado: -1 });
 
     if (!partido)
       return res.status(404).json({ message: "Partido no encontrado" });
