@@ -18,7 +18,14 @@ export const obtenerJugadores = async (req, res) => {
   const { query } = req.query;
   try {
     const jugadores = await Jugador.find(
-      query ? { nombre: { $regex: query, $options: "i" } } : {}
+      query
+        ? {
+            $or: [
+              { nombre: { $regex: query, $options: "i" } },
+              { apellido: { $regex: query, $options: "i" } },
+            ],
+          }
+        : {}
     ).populate("club", "nombre logo");
     res.json(jugadores);
   } catch (error) {
