@@ -1,6 +1,5 @@
 // models/ProximosPartidos.js
-import  {mongoose,Schema} from "mongoose"
-
+import { mongoose, Schema } from "mongoose";
 
 const proximosPartidosSchema = new Schema({
   local: { type: Schema.Types.ObjectId, ref: "equipo", required: true },
@@ -17,11 +16,10 @@ const proximosPartidosSchema = new Schema({
   fecha: { type: Date, required: true },
 
   estadio: { type: String },
-  estado:{
-    type:String,
-    default:'pendiente'
-
-  }
+  estado: {
+    type: String,
+    default: "pendiente",
+  },
 });
 
 export default mongoose.model("matcher", proximosPartidosSchema);
