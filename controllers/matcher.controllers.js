@@ -211,15 +211,15 @@ export const evaluarPartidos = async (req, res) => {
         equipo_visitante.estadisticasGlobales.partidos_jugados += 1;
 
         //estadisticas del torneo
-        equipo_localfound.estadisticas.partidos_empatados++;
-        equipo_localfound.estadisticas.partidos_jugados++;
+        equipo_localfound.estadisticas.partidos_empatados += 1;
+        equipo_localfound.estadisticas.partidos_jugados += 1;
         equipo_localfound.estadisticas.puntos += 1;
         equipo_localfound.estadisticas.asistencias += asistencias_local;
         equipo_localfound.estadisticas.goles_favor += goles_local;
         equipo_localfound.estadisticas.goles_contra += goles_visitante;
 
-        equipo_visitantefound.estadisticas.partidos_empatados++;
-        equipo_visitantefound.estadisticas.partidos_jugados++;
+        equipo_visitantefound.estadisticas.partidos_empatados += 1;
+        equipo_visitantefound.estadisticas.partidos_jugados += 1;
         equipo_visitantefound.estadisticas.puntos += 1;
         equipo_visitantefound.estadisticas.asistencias +=
           asistencias_visitantes;
@@ -240,16 +240,16 @@ export const evaluarPartidos = async (req, res) => {
         equipo_visitante.estadisticasGlobales.goles_contra += goles_local;
 
         //Gano el equipo local
-        equipo_localfound.estadisticas.partidos_jugados++;
-        equipo_localfound.estadisticas.partidos_ganados++;
+        equipo_localfound.estadisticas.partidos_jugados += 1;
+        equipo_localfound.estadisticas.partidos_ganados += 1;
 
         equipo_localfound.estadisticas.puntos += 3;
         equipo_localfound.estadisticas.asistencias_local += asistencias_local;
         equipo_localfound.estadisticas.goles_favor += goles_local;
         equipo_localfound.estadisticas.goles_contra += goles_visitante;
 
-        equipo_visitantefound.estadisticas.partidos_perdidos++;
-        equipo_visitantefound.estadisticas.partidos_jugados++;
+        equipo_visitantefound.estadisticas.partidos_perdidos += 1;
+        equipo_visitantefound.estadisticas.partidos_jugados += 1;
         equipo_visitantefound.estadisticas.goles_favor += goles_visitante;
         equipo_visitantefound.estadisticas.goles_contra += goles_local;
         equipo_visitantefound.estadisticas.asistencias +=
@@ -268,16 +268,16 @@ export const evaluarPartidos = async (req, res) => {
         equipo_visitante.estadisticasGlobales.goles_favor += goles_visitante;
         equipo_visitante.estadisticasGlobales.goles_contra += goles_local;
 
-        equipo_visitantefound.estadisticas.partidos_jugados++;
-        equipo_visitantefound.estadisticas.partidos_ganados++;
+        equipo_visitantefound.estadisticas.partidos_jugados += 1;
+        equipo_visitantefound.estadisticas.partidos_ganados += 1;
         equipo_visitantefound.estadisticas.puntos += 3;
         equipo_visitantefound.estadisticas.asistencias +=
           asistencias_visitantes;
         equipo_visitantefound.estadisticas.goles_favor += goles_visitante;
         equipo_visitantefound.estadisticas.goles_contra += goles_local;
 
-        equipo_localfound.estadisticas.partidos_perdidos++;
-        equipo_localfound.estadisticas.partidos_jugados++;
+        equipo_localfound.estadisticas.partidos_perdidos += 1;
+        equipo_localfound.estadisticas.partidos_jugados += 1;
         equipo_localfound.estadisticas.goles_favor += goles_local;
         equipo_localfound.estadisticas.goles_contra += goles_visitante;
         equipo_localfound.estadisticas.asistencias += asistencias_local;
@@ -285,7 +285,7 @@ export const evaluarPartidos = async (req, res) => {
     } else {
       //Estadisticas si no es un partido de clasificacion, no sumara puntos
 
-      if (is_draw) {
+      if (is_draw == true) {
         equipo_local.estadisticasGlobales.partidos_jugados += 1;
         equipo_local.estadisticasGlobales.goles_favor += goles_local;
         equipo_local.estadisticasGlobales.goles_contra += goles_visitante;
