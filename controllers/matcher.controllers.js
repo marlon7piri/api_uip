@@ -203,7 +203,9 @@ export const evaluarPartidos = async (req, res) => {
     //Hubo un empate
 
     if (partido.tipo === "clasificacion") {
-      if (is_draw == true) {
+      console.log(typeof is_draw);
+      if (is_draw === "true") {
+        console.log("Entre aqui por empate");
         //estadisticas globales
         equipo_local.estadisticasGlobales.partidos_empatados += 1;
         equipo_visitante.estadisticasGlobales.partidos_empatados += 1;
@@ -285,7 +287,7 @@ export const evaluarPartidos = async (req, res) => {
     } else {
       //Estadisticas si no es un partido de clasificacion, no sumara puntos
 
-      if (is_draw == true) {
+      if (is_draw === "true") {
         equipo_local.estadisticasGlobales.partidos_jugados += 1;
         equipo_local.estadisticasGlobales.goles_favor += goles_local;
         equipo_local.estadisticasGlobales.goles_contra += goles_visitante;
@@ -319,6 +321,7 @@ export const evaluarPartidos = async (req, res) => {
         equipo_visitante.estadisticasGlobales.goles_contra += goles_local;
       }
     }
+
     await equipo_local.save();
     await equipo_visitante.save();
 
