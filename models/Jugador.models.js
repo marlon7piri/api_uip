@@ -18,6 +18,8 @@ const jugadorSchema = new mongoose.Schema(
       ataque: { type: Number, default: 50 },
       defensa: { type: Number, default: 50 },
       regate: { type: Number, default: 50 },
+      tarjetas_amarillas: { type: Number, default: 0 },
+      tarjetas_rojas: { type: Number, default: 0 },
 
     },
     rol: { type: String, default: 'jugador' },

@@ -6,6 +6,8 @@ import TorneoModels from "../models/Torneo.models.js";
 import {
   goleadoresTorneo,
   asistentesTorneo,
+  amarillasTorneo,
+  rojasTorneo,
 } from "../utils/actualizacionStaticsTorneo.js";
 
 // Crear un nuevo partido
@@ -170,6 +172,9 @@ export const evaluarPartidos = async (req, res) => {
     await goleadoresTorneo(torneo, goleadores);
     await asistentesTorneo(torneo, asistentes);
 
+    await amarillasTorneo(torneo, tarjetas_amarillas);
+    await rojasTorneo(torneo, tarjetas_rojas);
+
     if (!equipo_local || !equipo_visitante) {
       return res.status(404).json({
         message: "Algunos de los equipos no se encontraron",
@@ -217,8 +222,6 @@ export const evaluarPartidos = async (req, res) => {
       equipo_visitantefound.estadisticas.asistencias += asistencias_visitantes;
       equipo_visitantefound.estadisticas.goles_favor += goles_visitante;
       equipo_visitantefound.estadisticas.goles_contra += goles_local;
-
-      console.log("entre a estadisticas de isdraw");
     }
 
     if (goles_local > goles_visitante) {
@@ -247,8 +250,6 @@ export const evaluarPartidos = async (req, res) => {
       equipo_visitantefound.estadisticas.goles_favor += goles_visitante;
       equipo_visitantefound.estadisticas.goles_contra += goles_local;
       equipo_visitantefound.estadisticas.asistencias += asistencias_visitantes;
-
-      console.log("entre a estadisticas de local mayor a visitante");
     } else if (goles_local < goles_visitante) {
       //Gano el equipo visitante
 
@@ -275,7 +276,6 @@ export const evaluarPartidos = async (req, res) => {
       equipo_localfound.estadisticas.goles_favor += goles_local;
       equipo_localfound.estadisticas.goles_contra += goles_visitante;
       equipo_localfound.estadisticas.asistencias += asistencias_local;
-      console.log("entre a estadisticas de visitante  mayor a local");
     }
 
     await equipo_local.save();
