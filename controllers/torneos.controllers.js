@@ -36,7 +36,9 @@ export const obtenerTorneoPorId = async (req, res) => {
       })
       .populate("partidos")
       .populate("goleadores.jugador")
-      .populate("asistentes.jugador");
+      .populate("asistentes.jugador")
+      .populate("sancionados_roja.jugador")
+      .populate("sancionados_amarilla.jugador");
 
     if (!torneo) {
       return res.status(404).json({ message: "Torneo no encontrado" });
