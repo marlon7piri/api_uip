@@ -33,7 +33,7 @@ const create = async (req, res) => {
     userInstance.password = await userInstance.encryptPassword(password);
     const user = await userInstance.save();
 
-    return res.status(201).json(user);
+    return res.status(200).json(user);
   } catch (error) {
     res.status(500).send({
       status: "error",
