@@ -14,13 +14,20 @@ const isValidEmail = (email) => {
 const create = async (req, res) => {
   const { nameUser, email, password, rol, clasificacion } = req.body;
 
-  const messages = [];
-
   try {
     const emailUser = await Users.findOne({ email });
+
     if (emailUser) {
-      res.status(404).json({
+      return res.status(409).json({
         messages: "El email ya esta en uso",
+      });
+    }
+
+    const nameUserExist = await Users.findOne({ nameUser });
+
+    if (nameUserExist) {
+      return res.status(409).json({
+        messages: "El nombre de usuario ya esta en uso",
       });
     }
     const userInstance = new Users({
@@ -33,12 +40,11 @@ const create = async (req, res) => {
     userInstance.password = await userInstance.encryptPassword(password);
     const user = await userInstance.save();
 
-    return res.status(200).json(user);
+    console.log({ user });
+    return res.status(201).json(user);
   } catch (error) {
-    res.status(500).send({
-      status: "error",
-      message: error,
-    });
+    console.error("Error en la creación de usuario:", error);
+    return res.status(500).json({ message: "Error interno del servidor" });
   }
 };
 
@@ -58,10 +64,12 @@ const resetPassword = async (req, res) => {
     const userData = await Users.findOne(query);
 
     if (!userData) {
-      res.status(201).send({
-        status: "error",
-        message: "Usuario no encontrado",
-      });
+      res
+        .json({
+          status: "error",
+          message: "Usuario no encontrado",
+        })
+        .status(404);
     }
 
     const match = await userData.matchPassword(password);
@@ -90,8 +98,6 @@ const resetPassword = async (req, res) => {
 
 const login = async (req, res) => {
   const { username, password } = req.body;
-
-  console.log(username, password);
 
   try {
     const userData = await Users.findOne({ nameUser: username });
