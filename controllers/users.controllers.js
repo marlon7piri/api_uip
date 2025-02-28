@@ -1,9 +1,9 @@
-import  { tokenGenerator }  from "../helpers/tokenGenerate.js"
-import  Tokens  from "../models/Tokens.models.js"
-import  jwt  from "jsonwebtoken"
-import  crypto  from "crypto"
-import  {emailsNotifications}  from "../utils/emailsNotifications.js"
-import  Users  from "../models/User.models.js"
+import { tokenGenerator } from "../helpers/tokenGenerate.js";
+import Tokens from "../models/Tokens.models.js";
+import jwt from "jsonwebtoken";
+import crypto from "crypto";
+import { emailsNotifications } from "../utils/emailsNotifications.js";
+import Users from "../models/User.models.js";
 
 const isValidEmail = (email) => {
   const patron = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
@@ -12,35 +12,28 @@ const isValidEmail = (email) => {
 };
 
 const create = async (req, res) => {
-  const { nameUser, email, password,rol ,clasificacion} = req.body;
+  const { nameUser, email, password, rol, clasificacion } = req.body;
 
   const messages = [];
 
   try {
     const emailUser = await Users.findOne({ email });
     if (emailUser) {
-      messages.push({ text: "El email ya esta en uso." });
-      res.status(201).send({
-        status: "error",
-        messages,
-      });
-    } else {
-      const userInstance = new Users({
-        nameUser,
-        email,
-        password,
-        rol,
-        clasificacion
-      });
-      userInstance.password = await userInstance.encryptPassword(password);
-      await userInstance.save();
-
-      res.send({
-        status: "success",
-        message: "Usuario Creado!",
-        data: userInstance,
+      res.status(404).json({
+        messages: "El email ya esta en uso",
       });
     }
+    const userInstance = new Users({
+      nameUser,
+      email,
+      password,
+      rol,
+      clasificacion,
+    });
+    userInstance.password = await userInstance.encryptPassword(password);
+    const user = await userInstance.save();
+
+    return res.status(201).json(user);
   } catch (error) {
     res.status(500).send({
       status: "error",
@@ -98,7 +91,7 @@ const resetPassword = async (req, res) => {
 const login = async (req, res) => {
   const { username, password } = req.body;
 
-  console.log(username, password)
+  console.log(username, password);
 
   try {
     const userData = await Users.findOne({ nameUser: username });
@@ -225,10 +218,6 @@ const getUser = async (req, res) => {
       .send({ status: e.status || "error", message: e.message });
   }
 };
-
-
-
-
 
 const updateUser = async (req, res) => {
   const { userId, dataUser } = req.body;
@@ -401,7 +390,7 @@ const requestResetPassword = async (req, res) => {
 async function generateHexCode(length) {
   return crypto.randomBytes(length).toString("hex").substr(0, length);
 }
-export  {
+export {
   create,
   login,
   listUsers,
