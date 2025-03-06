@@ -27,7 +27,12 @@ RouterUpload.post("/upload", upload.single("image"), async (req, res) => {
 
     // Subir imagen a Cloudinary
     const result = await cloudinary.uploader.upload(req.file.path, {
-      folder: "jugadores", // Opcional: especifica una carpeta en Cloudinary
+      folder: "jugadores", // Opcional: especifica una carpeta en Cloudinary,
+      transformation:[
+        {
+          effect:"remove_background"
+        }
+      ]
     });
 
     return res.status(200).json({
