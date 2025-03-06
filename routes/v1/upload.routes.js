@@ -26,12 +26,16 @@ RouterUpload.post("/upload", upload.single("image"), async (req, res) => {
     }
 
     // Subir imagen a Cloudinary
+
+   
     const result = await cloudinary.uploader.upload(req.file.path, {
       folder: "jugadores", // Opcional: especifica una carpeta en Cloudinary,
-      background_removal: "cloudinary_ai",
+      background_removal: "pixelz"
       
     });
 
+
+    
     return res.status(200).json({
       message: "Imagen cargada con éxito.",
       url: result.secure_url, // URL pública de la imagen cargada
