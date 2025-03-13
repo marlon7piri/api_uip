@@ -1,5 +1,6 @@
 // controllers/jugadorController.js
 import Equipo from "../models/Equipo.models.js";
+import JugadorModels from "../models/Jugador.models.js";
 import Jugador from "../models/Jugador.models.js";
 
 // Crear un nuevo jugador
@@ -20,11 +21,11 @@ export const obtenerJugadores = async (req, res) => {
     const jugadores = await Jugador.find(
       query
         ? {
-            $or: [
-              { nombre: { $regex: query, $options: "i" } },
-              { apellido: { $regex: query, $options: "i" } },
-            ],
-          }
+          $or: [
+            { nombre: { $regex: query, $options: "i" } },
+            { apellido: { $regex: query, $options: "i" } },
+          ],
+        }
         : {}
     ).populate("club", "nombre logo");
     res.json(jugadores);
@@ -32,7 +33,23 @@ export const obtenerJugadores = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+export const editarJugador = async (req, res) => {
+  const jugador = req.body
+  const { id } = req.params
 
+  try {
+    const updatedplayer = await JugadorModels.findByIdAndUpdate(id, jugador, { new: true })
+
+    if (!updatedplayer) {
+      return res.status(404).json({ message: "No se encontro el jugador" })
+    }
+
+    return res.status(201).json({ message: "Jugador actualizado", data: updatedplayer })
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+
+  }
+}
 // Obtener un jugador por ID
 export const obtenerJugadorPorId = async (req, res) => {
   try {
@@ -47,6 +64,21 @@ export const obtenerJugadorPorId = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+export const deleteJugador = async (req, res) => {
+  try {
+    const jugador = await Jugador.findByIdAndDelete(req.params.id);
+    if (!jugador){
+      return res.status(404).json({ message: "Jugador no encontrado" });
+
+    }
+    return res.status(200).json({ message: "Jugador eliminado" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
 
 // Actualizar un jugador por ID
 export const actualizarJugador = async (req, res) => {
