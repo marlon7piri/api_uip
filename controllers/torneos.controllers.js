@@ -54,20 +54,34 @@ export const obtenerTorneoPorId = async (req, res) => {
         nombre: equipo.nombre,
         logo: equipo.logo,
         estadisticasGlobales: equipo.estadisticasGlobales,
-        estadisticasTorneo: estadisticasDelTorneo || null, // Puede ser null si no tiene estadísticas
+        estadisticasTorneo:
+          estadisticasDelTorneo
+          || null, // Puede ser null si no tiene estadísticas
+
       };
     });
-
     const torneo_especifico = equiposConEstadisticas.filter(
       (equipo) => equipo.estadisticasTorneo !== null
     );
 
+
     // Ordena los equipos por puntos (suponiendo que la propiedad es 'puntos')
     torneo_especifico.sort(
-      (a, b) =>
-        b.estadisticasTorneo.estadisticas.puntos -
-        a.estadisticasTorneo.estadisticas.puntos
+      (a, b) => {
+        const difPuntos = b.estadisticasTorneo.estadisticas.puntos -
+          a.estadisticasTorneo.estadisticas.puntos
+
+        if (difPuntos !== 0) {
+          return difPuntos
+        }
+        const difGolesA = a.estadisticasTorneo.estadisticas.goles_favor - a.estadisticasTorneo.estadisticas.goles_contra
+        const difGolesB = b.estadisticasTorneo.estadisticas.goles_favor - b.estadisticasTorneo.estadisticas.goles_contra
+        return difGolesB - difGolesA
+
+      }
+
     );
+
 
     return res.status(200).json({ torneo_especifico, torneo });
   } catch (error) {
