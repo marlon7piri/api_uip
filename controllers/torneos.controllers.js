@@ -7,8 +7,10 @@ import ProximosPartidos from "../models/matcher.models.js";
 // Crear un nuevo torneo
 export const crearTorneo = async (req, res) => {
   try {
-    const { nombre, foto } = req.body;
-    const nuevoTorneo = new Torneo({ nombre, foto });
+    const { nombre, foto,autorId } = req.body;
+
+
+    const nuevoTorneo = new Torneo({ autorId,nombre, foto });
     await nuevoTorneo.save();
     res.status(201).json(nuevoTorneo);
   } catch (error) {
@@ -19,7 +21,12 @@ export const crearTorneo = async (req, res) => {
 // Obtener todos los torneos
 export const obtenerTorneos = async (req, res) => {
   try {
-    const torneos = await Torneo.find();
+    const {autorId} = await req.query
+
+   
+
+    let filtro = {autorId}
+    const torneos = await Torneo.find(filtro);
     res.status(200).json(torneos);
   } catch (error) {
     res.status(500).json({ message: "Error al obtener torneos", error });
@@ -29,7 +36,8 @@ export const obtenerTorneos = async (req, res) => {
 // Obtener un torneo por ID
 export const obtenerTorneoPorId = async (req, res) => {
   try {
-    const torneo = await Torneo.findById(req.params.id)
+    let filtro = {autorId,_id:req.params.id}
+    const torneo = await Torneo.find(filtro)
       .populate({
         path: "equipos",
         select: "nombre logo torneos estadisticasGlobales",

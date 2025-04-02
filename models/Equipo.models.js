@@ -2,6 +2,10 @@
 import mongoose from "mongoose";
 
 const equipoSchema = new mongoose.Schema({
+  autorId:{
+    type:String,
+    required:true
+  },
   nombre: {
     type: String,
     required: true,

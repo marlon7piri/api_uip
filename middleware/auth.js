@@ -3,6 +3,10 @@ import  Tokens  from "../models/Tokens.models.js"
 
 const isAuth = async (req, res, next) => {
   const { token } = req.headers;
+  
+
+  
+
   const dataToken = await Tokens.findOne({ token });
   try {
     if (token) {

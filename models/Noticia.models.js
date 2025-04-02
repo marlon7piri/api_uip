@@ -14,6 +14,10 @@ const noticiaSchema = new Schema(
     foto: {
       type: String,
     },
+    autorId:{
+      type:String,
+      required:true
+    }
   },
   {
     timestamps: true,

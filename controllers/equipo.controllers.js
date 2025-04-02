@@ -14,8 +14,13 @@ export const crearEquipo = async (req, res) => {
 // Obtener todos los equipos
 export const obtenerEquipos = async (req, res) => {
   try {
+
+    const {autorId} =  await req.query
+    let filtro = {autorId}
+
     const equipos = await Equipo.find();
-    res.json(equipos);
+
+    res.status(200).json(equipos);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -56,12 +61,20 @@ export const obtenerEquipoPorPartido = async (req, res) => {
 // Actualizar un equipo por ID
 export const actualizarEquipo = async (req, res) => {
   try {
+    const {autorId} =await req.query
+
+    const equipofound = await Equipo.findById(req.params.id)
+
+    if(equipofound && equipofound.autorId !== autorId){
+      return res.status(401).json({message:"No tienes permitido editar este equipo"})
+    }
+
     const equipo = await Equipo.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
     });
     if (!equipo)
       return res.status(404).json({ message: "Equipo no encontrado" });
-    res.json(equipo);
+    res.status(201).json(equipo);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }

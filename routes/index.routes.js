@@ -7,6 +7,7 @@ import ofertas from "./v1/ofertas.routes.js";
 import noticias from "./v1/noticias.routes.js";
 import matcher from "./v1/matcher.routes.js";
 import upload from "./v1/upload.routes.js";
+import { authMiddleware } from "../utils/authMiddleware.js";
 
 export default (app) => {
   app.use("/api/v1/users", users);

@@ -35,6 +35,10 @@ const torneoSchema = new mongoose.Schema({
       cantidad: { type: Number },
     },
   ],
+  autorId:{
+    type:String,
+    required:true
+  }
 });
 
 export default mongoose.model("torneo", torneoSchema);

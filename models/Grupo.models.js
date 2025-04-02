@@ -1,6 +1,10 @@
 import { mongoose, Schema } from "mongoose";
 
 const grupoSchema = new mongoose.Schema({
+  autorId:{
+    type:String,
+    required:true
+  },
   nombre: {
     type: String,
     required: true,
