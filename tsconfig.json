@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "lib": ["ESNext"],
+    "outDir": "./dist",
+    "removeComments": true,
+    "target": "ES6",
+    "baseUrl": "./",
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "strict": false, // Desactiva las verificaciones estrictas.
+    "noImplicitAny": false,  // Permite el uso de `any` sin causar errores.
+    "skipLibCheck": true, // Omite la comprobación de las bibliotecas
+    "forceConsistentCasingInFileNames": true,
+    "noUnusedLocals": false,  // Permite que haya variables no utilizadas sin generar errores.
+    "noUnusedParameters": false, // Permite parámetros no utilizados sin generar errores.
+    "noImplicitReturns": false // Omite los errores cuando no todas las funciones tienen un valor de retorno
+  },
+  "include": ["./index.ts", "./**/*.ts"],
+  "exclude": ["node_modules/**/*"]
+}
