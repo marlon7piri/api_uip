@@ -1,8 +1,10 @@
 import { Request, Response } from "express"
-import TorneoModels from "../models/Torneo.models";
+import TorneoModels, { IOTorneo } from "../models/Torneo.models";
 import Torneo from "../models/Torneo.models";
 import EquipoModel from "../models/Equipo.models";
 import ProximosPartidos from "../models/matcher.models";
+import {  IEquipo } from "entities/equipos";
+import { ITorneo } from "entities/torneos";
 
 // Crear un nuevo torneo
 export const crearTorneo = async (req: Request, res: Response): Promise<any> => {
@@ -27,12 +29,12 @@ export const crearTorneo = async (req: Request, res: Response): Promise<any> => 
 // Obtener todos los torneos
 export const obtenerTorneos = async (req: Request, res: Response): Promise<any> => {
   try {
-    const { autorId } = await req.query
+    const { autorId } = req.query
 
 
 
     let filtro = { autorId }
-    const torneos = await Torneo.find(filtro);
+    const torneos = await Torneo.find();
     res.status(200).json(torneos);
   } catch (error: unknown) {
 
@@ -47,9 +49,10 @@ export const obtenerTorneos = async (req: Request, res: Response): Promise<any> 
 
 // Obtener un torneo por ID
 export const obtenerTorneoPorId = async (req: Request, res: Response): Promise<any> => {
+
+  
   try {
-    let filtro = { autorId, _id: req.params.id }
-    const torneo = await Torneo.find(filtro)
+    const torneos:ITorneo = await Torneo.findById(req.params.id)
       .populate({
         path: "equipos",
         select: "nombre logo torneos estadisticasGlobales",
@@ -60,20 +63,27 @@ export const obtenerTorneoPorId = async (req: Request, res: Response): Promise<a
       .populate("sancionados_roja.jugador")
       .populate("sancionados_amarilla.jugador");
 
-    if (!torneo) {
+
+    if (!torneos) {
       return res.status(404).json({ message: "Torneo no encontrado" });
     }
+    
+    
 
-    const equiposConEstadisticas = torneo.equipos.map((equipo) => {
+    
+
+    const equiposConEstadisticas = torneos?.equipos.map((equipo) => {
       const estadisticasDelTorneo = equipo.torneos.find(
         (torneo) => torneo.torneoId.toString() === req.params.id
       );
+      const {estadisticasGlobales,nombre,logo} = equipo 
 
+     console.log({estadisticasGlobales,nombre,logo})
       return {
         _id: equipo._id,
-        nombre: equipo.nombre,
-        logo: equipo.logo,
-        estadisticasGlobales: equipo.estadisticasGlobales,
+        nombre: nombre,
+        logo: logo,
+        estadisticasGlobales: estadisticasGlobales,
         estadisticasTorneo:
           estadisticasDelTorneo
           || null, // Puede ser null si no tiene estadísticas
@@ -103,7 +113,7 @@ export const obtenerTorneoPorId = async (req: Request, res: Response): Promise<a
     );
 
 
-    return res.status(200).json({ torneo_especifico, torneo });
+    return res.status(200).json({ torneo_especifico, torneos });
   } catch (error: unknown) {
 
     if (error instanceof Error) {
@@ -236,10 +246,23 @@ export const registerEquiposByTorneo = async (req: Request, res: Response): Prom
         });
       }
 
+
       equipoFound.torneos.push({
-        torneoId: torneo._id,
-        estadisticas: { goles: 0, asistencias: 0, puntos: 0 },
+        torneoId: torneo?._id,
+
+        estadisticas: {
+
+          goles_favor: 0,
+          goles_contra: 0,
+          partidos_empatados: 0,
+          partidos_ganados: 0,
+          partidos_jugados: 0,
+          partidos_perdidos: 0,
+          asistencias: 0,
+          puntos: 0,
+        },
       });
+
       await equipoFound.save();
 
       if (!torneo.equipos.includes(teamId)) {

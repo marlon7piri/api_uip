@@ -170,7 +170,7 @@ const verifyToken = async (req: Request, res: Response): Promise<any> => {
   try {
     if (token) {
       if (dataToken !== null && dataToken.active) {
-        jwt.verify(token, process.env.JWT_SECRET);
+        jwt.verify(token as string, process.env.JWT_SECRET as string);
         res.send({
           status: "success",
           message: "Verified token",
@@ -205,7 +205,7 @@ const listUsers = async (req: Request, res: Response): Promise<any> => {
       res.send({ status: false, message: "Users not found!" });
     }
   } catch (error) {
-    res.status(e.code || 500).send({ status: false, message: e.message });
+    res.status(error.code || 500).send({ status: false, message: error.message });
   }
 };
 
@@ -256,146 +256,7 @@ const deleteUser = async (req: Request, res: Response): Promise<any> => {
   }
 };
 
-// Ruta para validar el código de verificación de email
-const verifyEmail = async (req: Request, res: Response): Promise<any> =>{
-  const { email, verificationCode } = req.body;
 
-  try {
-    // Buscar al usuario por el email
-    const user = await Users.findOne({ email });
-
-    // Verificar si el usuario existe
-    if (!user) {
-      return res.status(404).json({ error: "Usuario no encontrado." });
-    }
-
-    // Verificar si el código de verificación coincide
-    if (user.emailVerificationCode === verificationCode) {
-      // Si el código es correcto, actualiza el estado de verificación
-      user.emailVerified = true;
-      user.emailVerificationCode = null; // Limpiar el código después de usarlo
-      await user.save();
-      await emailNotifications.sendEmailBienvenida(user.email, user.nameUser);
-      return res
-        .status(200)
-        .json({ message: "Correo verificado exitosamente." });
-    } else {
-      return res
-        .status(400)
-        .json({ error: "Código de verificación incorrecto." });
-    }
-  } catch (error) {
-    console.error("Error verificando correo:", error);
-    return res.status(500).json({ error: "Error verificando correo." });
-  }
-};
-
-const verifyEmailPass = async (req: Request, res: Response): Promise<any> => {
-  const { userid, verificationCode } = req.body;
-
-  try {
-    // Buscar al usuario por el email
-    const user = await Users.findById(userid);
-
-    // Verificar si el usuario existe
-    if (!user) {
-      return res.status(404).json({ error: "Usuario no encontrado." });
-    }
-
-    // Verificar si el código de verificación coincide
-    if (user.emailVerificationCode === verificationCode) {
-      // Si el código es correcto, actualiza el estado de verificación
-      user.emailVerified = true;
-      user.emailVerificationCode = null; // Limpiar el código después de usarlo
-      await user.save();
-      return res.status(200).json({ message: "verificado exitosamente." });
-    } else {
-      return res
-        .status(400)
-        .json({ error: "Código de verificación incorrecto." });
-    }
-  } catch (error) {
-    console.error("Error verificando correo:", error);
-    return res.status(500).json({ error: "Error verificando correo." });
-  }
-};
-
-const resetAdminPassword = async (req: Request, res: Response): Promise<any> => {
-  const { password, user, cnfPassword } = req.body;
-
-  if (!user || !password || !cnfPassword) {
-    return res.status(400).send({
-      status: "error",
-      message: "Email, password, y cnfPassword son requeridos",
-    });
-  }
-
-  const query = isValidEmail(user) ? { email: user } : { _id: user };
-
-  try {
-    const userData = await Users.findOne(query);
-
-    if (!userData) {
-      res.status(201).send({
-        status: "error",
-        message: "Usuario no encontrado",
-      });
-    }
-
-    const match = password === cnfPassword;
-
-    if (match) {
-      const hashedPassword = await userData.encryptPassword(password);
-      await Users.findOneAndUpdate(query, {
-        password: hashedPassword,
-        changePassword: false,
-      });
-
-      res.send({ status: "success", message: "Password change successful" });
-    } else {
-      res.status(201).send({
-        status: "error",
-        message: "El password no fue cambiado",
-      });
-    }
-  } catch (error) {
-    res.status(500).send({
-      status: "error",
-      message: "Internal server error",
-    });
-  }
-};
-
-const requestResetPassword = async (req: Request, res: Response): Promise<any> => {
-  try {
-    const { email } = req.body;
-    const userData = await Users.findOne({ email: email });
-
-    if (!userData) {
-      res.status(201).send({
-        status: "error",
-        message: "Usuario no encontrado",
-      });
-    }
-
-    const codeEmail = await generateHexCode(10);
-    userData.emailVerificationCode = codeEmail;
-    await userData.save();
-
-    await emailNotifications.sendEmailPassConfirmation(
-      userData.email,
-      process.env.EMAIL_PASS_VERIFICATION_URL + "/" + userData._id + codeEmail,
-      userData.nameUser
-    );
-    res.send({ status: "success", message: "email sent  successful" });
-  } catch (e) {
-    res.status(500).send({ status: "error", message: e });
-  }
-};
-
-async function generateHexCode(length) {
-  return crypto.randomBytes(length).toString("hex").substr(0, length);
-}
 export {
   create,
   login,
@@ -406,8 +267,5 @@ export {
   getUser,
   updateUser,
   deleteUser,
-  verifyEmail,
-  resetAdminPassword,
-  verifyEmailPass,
-  requestResetPassword,
+
 };

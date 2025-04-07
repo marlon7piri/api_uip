@@ -1,8 +1,8 @@
-import {Request,Response} from "express"
+import { Request, Response } from "express"
 import EquipoModels from "../models/Equipo.models";
 import GrupoModels from "../models/Grupo.models";
 
-export const createGrupo = async (req:Request, res:Response) => {
+export const createGrupo = async (req: Request, res: Response) => {
   const { nombre, cantidad_equipos, cantidad_grupos, grupos } = req.body;
   try {
     const newGroup = new GrupoModels({
@@ -19,7 +19,7 @@ export const createGrupo = async (req:Request, res:Response) => {
         const equipofound = await EquipoModels.findById(id);
 
         if (!equipofound) {
-          return res
+          res
             .status(400)
             .json({ message: `El equipo con id: ${id} no se encuentra` });
         }
@@ -41,25 +41,25 @@ export const createGrupo = async (req:Request, res:Response) => {
       }
     }
 
-    return res.status(200).json({ message: "Grupo creado", data: grupo });
+    res.status(200).json({ message: "Grupo creado", data: grupo });
   } catch (error) {
-    return res.status(400).json({ message: "Error del servidor", error });
+    res.status(400).json({ message: "Error del servidor", error });
   }
 };
 
-export const getGrupos = async  (req:Request, res:Response) => {
+export const getGrupos = async (req: Request, res: Response) => {
   try {
     const grupos = await GrupoModels.find().populate(
       "grupos.equipos",
       "nombre  torneos"
     );
 
-    return res.status(200).json({ data: grupos });
+    res.status(200).json({ data: grupos });
   } catch (error) {
-    return res.status(500).json({ message: "Error del servidor", error });
+    res.status(500).json({ message: "Error del servidor", error });
   }
 };
-export const getGrupoById = async  (req:Request, res:Response) => {
+export const getGrupoById = async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
     const result = await GrupoModels.findById(id).populate(
@@ -68,13 +68,13 @@ export const getGrupoById = async  (req:Request, res:Response) => {
     );
 
     if (!result) {
-      return res.status(400).json({ message: "No existe el grupo" });
+      res.status(400).json({ message: "No existe el grupo" });
     }
 
     let GrupoInfo = {};
     for (const grupo of result.grupos) {
       const data = grupo.equipos.map((equipo) => {
-        console.log(equipo.nombre);
+
         const equipofound = equipo.torneos.find(
           (e) => e.torneoId.toString() === result._id.toString()
         );
@@ -89,13 +89,13 @@ export const getGrupoById = async  (req:Request, res:Response) => {
       GrupoInfo = data;
     }
 
-    return res.status(200).json({ data: GrupoInfo });
-  } catch (error:unknown) {
-    if(error instanceof Error){
+    res.status(200).json({ data: GrupoInfo });
+  } catch (error: unknown) {
+    if (error instanceof Error) {
 
-      return res.status(400).json({ message: "Error del servidor" });
-    }else{
-      return res.status(400).json({ message: "Error del servidor", error });
+      res.status(400).json({ message: "Error del servidor" });
+    } else {
+      res.status(400).json({ message: "Error del servidor", error });
 
     }
   }

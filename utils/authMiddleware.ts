@@ -1,6 +1,9 @@
-export const authMiddleware = (req,res,next)=>{
+import { Request, Response, NextFunction } from "express";
 
-   console.log(req.header)
+export const authMiddleware = (req: Request, res: Response, next: NextFunction): void => {
+  console.log(req.headers); // nota: es `headers`, no `header`
 
-    next()
-}
+  // Aquí podrías hacer validaciones con tokens, sesiones, etc.
+
+  next();
+};

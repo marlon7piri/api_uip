@@ -2,6 +2,7 @@ import mongoose, { Schema, Document, Model } from "mongoose";
 
 
 export interface IOTorneo extends Document {
+  _id: mongoose.Types.ObjectId,
   nombre: string,
   foto: string,
   equipos: mongoose.Types.ObjectId[],
@@ -24,8 +25,9 @@ export interface IOTorneo extends Document {
   }>,
   autorId: string
 }
+type ITorneoDoc = Document & IOTorneo;
 
-const torneoSchema: Schema<IOTorneo> = new Schema({
+const torneoSchema: Schema<ITorneoDoc> = new Schema({
   nombre: {
     type: String,
     required: true,
@@ -65,5 +67,5 @@ const torneoSchema: Schema<IOTorneo> = new Schema({
     required: true
   }
 });
-const Torneo :Model<IOTorneo> = mongoose.model<IOTorneo>("torneo",torneoSchema)
+const Torneo: Model<IOTorneo> = mongoose.model<IOTorneo>("torneo", torneoSchema)
 export default Torneo;

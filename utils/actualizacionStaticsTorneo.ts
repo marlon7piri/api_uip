@@ -2,7 +2,7 @@ import JugadorModels from "../models/Jugador.models";
 import Torneo from "../models/Torneo.models";
 import mongoose from "mongoose";
 
-export const goleadoresTorneo = async (idTorneo:string, idGoleadores:string[]) => {
+export const goleadoresTorneo = async (idTorneo: string, idGoleadores: string[]) => {
   const torneo = await Torneo.findById(idTorneo);
 
   if (!torneo) {
@@ -27,31 +27,36 @@ export const goleadoresTorneo = async (idTorneo:string, idGoleadores:string[]) =
     if (!jugador) {
       throw new Error(`Jugador con id:${idJugador} no se encontro`);
     }
+    if (typeof (cantidad) == 'number') {
+      jugador.estadisticasGlobales.goles += cantidad;
+      await jugador.save();
 
-    jugador.estadisticasGlobales.goles += cantidad;
+      //Actualizar estadisticas del torneo del jugador
 
-    await jugador.save();
+      const jugadorExist = torneo.goleadores.find(
+        (g) => g.jugador.toString() == idJugador
+      );
 
-    //Actualizar estadisticas del torneo del jugador
-
-    const jugadorExist = torneo.goleadores.find(
-      (g) => g.jugador.toString() == idJugador
-    );
-
-    if (jugadorExist) {
-      jugadorExist.cantidad += cantidad;
+      if (jugadorExist) {
+        jugadorExist.cantidad += cantidad;
+      } else {
+        torneo.goleadores.push({
+          jugador: new mongoose.Types.ObjectId(idJugador),
+          cantidad,
+        });
+      }
     } else {
-      torneo.goleadores.push({
-        jugador: new mongoose.Types.ObjectId(idJugador),
-        cantidad,
-      });
+      console.warn('cantidad no es un número:', cantidad);
     }
+
+
+
   }
 
   await torneo.save();
 };
 
-export const asistentesTorneo = async (idTorneo:string, idAsistentes:string[]) => {
+export const asistentesTorneo = async (idTorneo: string, idAsistentes: string[]) => {
   const torneo = await Torneo.findById(idTorneo);
 
   if (!torneo) {
@@ -75,28 +80,32 @@ export const asistentesTorneo = async (idTorneo:string, idAsistentes:string[]) =
       throw new Error(`Jugador con id:${idAsistente} no se encontro`);
     }
 
-    jugador.estadisticasGlobales.asistencias += cantidad;
+    if(typeof(cantidad) == 'number'){
+      jugador.estadisticasGlobales.asistencias += cantidad;
 
-    await jugador.save();
-
-    //Actualizar estadisticas del torneo del jugador
-    const existAsistente = torneo.asistentes.find(
-      (a) => a.jugador.toString() === idAsistente
-    );
-
-    if (existAsistente) {
-      existAsistente.cantidad += cantidad;
-    } else {
-      torneo.asistentes.push({
-        jugador: new mongoose.Types.ObjectId(idAsistente),
-        cantidad,
-      });
+      await jugador.save();
+  
+      //Actualizar estadisticas del torneo del jugador
+      const existAsistente = torneo.asistentes.find(
+        (a) => a.jugador.toString() === idAsistente
+      );
+  
+      if (existAsistente) {
+        existAsistente.cantidad += cantidad;
+      } else {
+        torneo.asistentes.push({
+          jugador: new mongoose.Types.ObjectId(idAsistente),
+          cantidad,
+        });
+      }
     }
+
+    
   }
 
   await torneo.save();
 };
-export const amarillasTorneo = async (idTorneo:string, idAmarillas:string[]) => {
+export const amarillasTorneo = async (idTorneo: string, idAmarillas: string[]) => {
   const torneo = await Torneo.findById(idTorneo);
 
   if (!torneo) {
@@ -120,28 +129,32 @@ export const amarillasTorneo = async (idTorneo:string, idAmarillas:string[]) => 
       throw new Error(`Jugador con id:${idAmarillas} no se encontro`);
     }
 
-    jugador.estadisticasGlobales.tarjetas_amarillas += cantidad;
+    if(typeof(cantidad) == 'number'){
+      jugador.estadisticasGlobales.tarjetas_amarillas += cantidad;
 
-    await jugador.save();
-
-    //Actualizar estadisticas del torneo del jugador
-    const existAmarilla = torneo.sancionados_amarilla.find(
-      (a) => a.jugador.toString() === idAmarillas
-    );
-
-    if (existAmarilla) {
-      existAmarilla.cantidad += cantidad;
-    } else {
-      torneo.sancionados_amarilla.push({
-        jugador: new mongoose.Types.ObjectId(idAmarillas),
-        cantidad,
-      });
+      await jugador.save();
+  
+      //Actualizar estadisticas del torneo del jugador
+      const existAmarilla = torneo.sancionados_amarilla.find(
+        (a) => a.jugador.toString() === idAmarillas
+      );
+  
+      if (existAmarilla) {
+        existAmarilla.cantidad += cantidad;
+      } else {
+        torneo.sancionados_amarilla.push({
+          jugador: new mongoose.Types.ObjectId(idAmarillas),
+          cantidad,
+        });
+      }
     }
+
+   
   }
 
   await torneo.save();
 };
-export const rojasTorneo = async (idTorneo:string, idRojas:string[]) => {
+export const rojasTorneo = async (idTorneo: string, idRojas: string[]) => {
   const torneo = await Torneo.findById(idTorneo);
 
   if (!torneo) {
@@ -165,23 +178,30 @@ export const rojasTorneo = async (idTorneo:string, idRojas:string[]) => {
       throw new Error(`Jugador con id:${idRojas} no se encontro`);
     }
 
-    jugador.estadisticasGlobales.tarjetas_rojas += cantidad;
+    if (typeof (cantidad) == 'number') {
 
-    await jugador.save();
+      jugador.estadisticasGlobales.tarjetas_rojas += cantidad;
 
-    //Actualizar estadisticas del torneo del jugador
-    const existRoja = torneo.sancionados_roja.find(
-      (a) => a.jugador.toString() === idRojas
-    );
+      await jugador.save();
 
-    if (existRoja) {
-      existRoja.cantidad += cantidad;
+      //Actualizar estadisticas del torneo del jugador
+      const existRoja = torneo.sancionados_roja.find(
+        (a) => a.jugador.toString() === idRojas
+      );
+
+      if (existRoja) {
+        existRoja.cantidad += cantidad;
+      } else {
+        torneo.sancionados_roja.push({
+          jugador: new mongoose.Types.ObjectId(idRojas),
+          cantidad,
+        });
+      }
     } else {
-      torneo.sancionados_roja.push({
-        jugador: new mongoose.Types.ObjectId(idRojas),
-        cantidad,
-      });
+      console.warn("cantidad no es un numero", cantidad)
     }
+
+
   }
 
   await torneo.save();
