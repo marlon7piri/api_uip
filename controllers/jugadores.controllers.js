@@ -6,11 +6,17 @@ import Jugador from "../models/Jugador.models.js";
 // Crear un nuevo jugador
 export const crearJugador = async (req, res) => {
   try {
+    const { userId } = req.body
+    const existPlayer = await Jugador.find({ userId })
+
+    if (existPlayer) {
+      return res.status(400).json({ message: `El jugador ya existe, no puede crearlo nuevamente` })
+    }
     const jugador = new Jugador(req.body);
     await jugador.save();
-    res.status(201).json(jugador);
+    return res.status(201).json(jugador);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    return res.status(400).json({ message: error.message });
   }
 };
 
@@ -64,11 +70,27 @@ export const obtenerJugadorPorId = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+// Obtener un jugador por ID
+export const obtenerJugadorPorUserId = async (req, res) => {
+  try {
+    const jugador = await Jugador.findOne({userId:req.params.id}).populate(
+      "club",
+      "nombre logo"
+    );
+    if (!jugador){
+      return res.status(404).json({ message: "Jugador no encontrado" });
+
+    }
+    return res.json(jugador);
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
 
 export const deleteJugador = async (req, res) => {
   try {
     const jugador = await Jugador.findByIdAndDelete(req.params.id);
-    if (!jugador){
+    if (!jugador) {
       return res.status(404).json({ message: "Jugador no encontrado" });
 
     }
@@ -83,14 +105,16 @@ export const deleteJugador = async (req, res) => {
 // Actualizar un jugador por ID
 export const actualizarJugador = async (req, res) => {
   try {
-    const jugador = await Jugador.findByIdAndUpdate(req.params.id, req.body, {
+    const jugador = await Jugador.findOneAndUpdate({userId:req.params.id}, req.body, {
       new: true,
     });
-    if (!jugador)
+    if (!jugador){
       return res.status(404).json({ message: "Jugador no encontrado" });
-    res.json(jugador);
+    }
+
+    return res.json(jugador);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    return res.status(400).json({ message: error.message });
   }
 };
 

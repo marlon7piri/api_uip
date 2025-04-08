@@ -1,5 +1,5 @@
 // models/Jugador.js
-import  mongoose from "mongoose"
+import mongoose from "mongoose"
 
 
 const jugadorSchema = new mongoose.Schema(
@@ -12,8 +12,8 @@ const jugadorSchema = new mongoose.Schema(
     estadisticasGlobales: {
       goles: { type: Number, default: 0 },
       asistencias: { type: Number, default: 0 },
-      valor_mercado: { type: Number,default:0 },
-      posicion: { type: String},
+      valor_mercado: { type: Number, default: 0 },
+      posicion: { type: String },
       velocidad: { type: Number, default: 50 },
       ataque: { type: Number, default: 50 },
       defensa: { type: Number, default: 50 },
@@ -26,7 +26,8 @@ const jugadorSchema = new mongoose.Schema(
     email: { type: String, required: true },
     estudiante: { type: String, required: true },
     status: { type: String, default: "activo" },
-    club: { type: mongoose.Schema.Types.ObjectId, ref: "equipo" }
+    club: { type: mongoose.Schema.Types.ObjectId, ref: "equipo" },
+    userId: {type: String, require: true, unique: true}
   },
   {
     timestamps: true,

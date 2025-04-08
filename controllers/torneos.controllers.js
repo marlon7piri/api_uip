@@ -20,6 +20,7 @@ export const crearTorneo = async (req, res) => {
 export const obtenerTorneos = async (req, res) => {
   try {
     const torneos = await Torneo.find();
+    console.log("Pasando por aqui")
     res.status(200).json(torneos);
   } catch (error) {
     res.status(500).json({ message: "Error al obtener torneos", error });

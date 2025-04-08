@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import { emailsNotifications } from "../utils/emailsNotifications.js";
 import Users from "../models/User.models.js";
+import { crearJugadorInicial } from "../utils/crearPlayerInicial.js";
 
 const isValidEmail = (email) => {
   const patron = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
@@ -12,7 +13,7 @@ const isValidEmail = (email) => {
 };
 
 const create = async (req, res) => {
-  const { nameUser, email, password, rol, clasificacion } = req.body;
+  const { nameUser, email, password, rol, clasificacion, nombre, apellido } = req.body;
 
   try {
     const emailUser = await Users.findOne({ email });
@@ -40,8 +41,23 @@ const create = async (req, res) => {
     userInstance.password = await userInstance.encryptPassword(password);
     const user = await userInstance.save();
 
-    console.log({ user });
-    return res.status(201).json(user);
+
+    const newUser = {
+      _id: user._id,
+      email: user.email,
+      nombre: nombre,
+      apellido: apellido,
+      clasificacion: user.clasificacion
+
+    }
+    const isOk = await crearJugadorInicial(newUser)
+
+    if (isOk) {
+
+      return res.status(201).json(user);
+    }
+
+
   } catch (error) {
     console.error("Error en la creación de usuario:", error);
     return res.status(500).json({ message: "Error interno del servidor" });
