@@ -2,6 +2,8 @@ import dotenv from 'dotenv'
 dotenv.config()
 
 export const PORT = process.env.PORT
+
+const isDeveloper = process.NODE_ENV || 'development'
 export const MONGODB_URI =  process.env.MONGO_URI;
 export const JWT_SECRET =  process.env.JWT_SECRET
 export const cloud_name = process.env.CLOUDINARY_CLOUD_NAME
