@@ -1,4 +1,5 @@
 // controllers/jugadorController.js
+import { Types } from "mongoose";
 import Equipo from "../models/Equipo.models.js";
 import JugadorModels from "../models/Jugador.models.js";
 import Jugador from "../models/Jugador.models.js";
@@ -73,13 +74,25 @@ export const obtenerJugadorPorId = async (req, res) => {
 // Obtener un jugador por ID
 export const obtenerJugadorPorUserId = async (req, res) => {
   try {
-    const jugador = await Jugador.findOne({userId:req.params.id}).populate(
+    const jugador = await Jugador.findOne({ userId: req.params.id }).populate(
       "club",
       "nombre logo"
     );
-    if (!jugador){
-      return res.status(404).json({ message: "Jugador no encontrado" });
+    if (!jugador) {
 
+      const { email } = req.query
+
+      const jugadorId = await Jugador.findOne({ email }).populate(
+        "club",
+        "nombre logo"
+      );
+
+
+      if (!jugadorId) {
+        return res.status(404).json({ message: "Jugador no encontrado" });
+      }
+
+      return res.status(200).json(jugadorId);
     }
     return res.json(jugador);
   } catch (error) {
@@ -105,11 +118,28 @@ export const deleteJugador = async (req, res) => {
 // Actualizar un jugador por ID
 export const actualizarJugador = async (req, res) => {
   try {
-    const jugador = await Jugador.findOneAndUpdate({userId:req.params.id}, req.body, {
+
+   
+    const jugador = await Jugador.findOneAndUpdate({ userId: req.params.id }, req.body, {
       new: true,
     });
-    if (!jugador){
-      return res.status(404).json({ message: "Jugador no encontrado" });
+
+    if (!jugador) {
+
+      const { email } = req.body
+
+      const jugadorId = await Jugador.findOne({ email });
+
+      if (!jugadorId) {
+        return res.status(404).json({ message: "El jugador no existe" });
+      }
+
+      const jugadorUpdated = await Jugador.findOneAndUpdate({ _id: jugadorId._id }, { ...req.body, userId: req.params.id }, {
+        new: true,
+      });
+
+
+      return res.status(200).json(jugadorUpdated)
     }
 
     return res.json(jugador);
