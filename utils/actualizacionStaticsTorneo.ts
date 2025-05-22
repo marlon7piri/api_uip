@@ -1,8 +1,8 @@
 import JugadorModels from "../models/Jugador.models";
-import Torneo from "../models/Torneo.models";
+import Torneo, { IOTorneo } from "../models/Torneo.models";
 import mongoose from "mongoose";
 
-export const goleadoresTorneo = async (idTorneo: string, idGoleadores: string[]) => {
+export const goleadoresTorneo = async (idTorneo: IOTorneo, idGoleadores: string[]) => {
   const torneo = await Torneo.findById(idTorneo);
 
   if (!torneo) {
@@ -56,7 +56,7 @@ export const goleadoresTorneo = async (idTorneo: string, idGoleadores: string[])
   await torneo.save();
 };
 
-export const asistentesTorneo = async (idTorneo: string, idAsistentes: string[]) => {
+export const asistentesTorneo = async (idTorneo: IOTorneo, idAsistentes: string[]) => {
   const torneo = await Torneo.findById(idTorneo);
 
   if (!torneo) {
@@ -105,7 +105,7 @@ export const asistentesTorneo = async (idTorneo: string, idAsistentes: string[])
 
   await torneo.save();
 };
-export const amarillasTorneo = async (idTorneo: string, idAmarillas: string[]) => {
+export const amarillasTorneo = async (idTorneo: IOTorneo, idAmarillas: string[]) => {
   const torneo = await Torneo.findById(idTorneo);
 
   if (!torneo) {
@@ -154,7 +154,7 @@ export const amarillasTorneo = async (idTorneo: string, idAmarillas: string[]) =
 
   await torneo.save();
 };
-export const rojasTorneo = async (idTorneo: string, idRojas: string[]) => {
+export const rojasTorneo = async (idTorneo: IOTorneo, idRojas: string[]) => {
   const torneo = await Torneo.findById(idTorneo);
 
   if (!torneo) {

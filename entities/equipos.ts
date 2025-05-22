@@ -23,6 +23,6 @@ export interface Estadisticas {
 
 export interface Torneo {
     estadisticas: Estadisticas;
-    torneoId:     Types.ObjectId;
+    torneoId:     IEquipo;
    
 }

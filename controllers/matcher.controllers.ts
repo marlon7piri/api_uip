@@ -9,6 +9,7 @@ import {
   amarillasTorneo,
   rojasTorneo,
 } from "../utils/actualizacionStaticsTorneo.js";
+import { ITorneo } from "entities/torneos";
 
 // Crear un nuevo partido
 export const createPartido = async (req: Request, res: Response): Promise<any> => {
@@ -137,6 +138,20 @@ export const evaluarPartidos = async (req: Request, res: Response): Promise<any>
   } = req.body;
 
   try {
+
+    // Validar que los IDs sean válidos
+    if (
+      (goleadores && !Array.isArray(goleadores)) ||
+      (asistentes && !Array.isArray(asistentes)) ||
+      goleadores.some((id:string) => !mongoose.isValidObjectId(id)) ||
+      asistentes.some((id:string) => !mongoose.isValidObjectId(id))
+    ) {
+      return res
+        .status(400)
+        .json({ message: "IDs de goleadores o asistentes no son válidos" });
+    }
+
+    
     //Buscar ambos equipos
     const equipo_local = await EquipoModels.findById(id_local).populate(
       "torneos"
@@ -144,7 +159,7 @@ export const evaluarPartidos = async (req: Request, res: Response): Promise<any>
     const equipo_visitante = await EquipoModels.findById(id_visitante).populate(
       "torneos"
     );
-    const torneo = await TorneoModels.findById(torneoId).populate("goleadores");
+    const torneo  = await TorneoModels.findById(torneoId).populate("goleadores");
 
     const partido = await ProximosPartidos.findById(partidoId)
       .populate("resultado.goleadores")
@@ -158,17 +173,7 @@ export const evaluarPartidos = async (req: Request, res: Response): Promise<any>
       return res.status(400).json({ message: "El partido ya se evaluo" });
     }
 
-    // Validar que los IDs sean válidos
-    if (
-      (goleadores && !Array.isArray(goleadores)) ||
-      (asistentes && !Array.isArray(asistentes)) ||
-      goleadores.some((id:string) => !mongoose.isValidObjectId(id)) ||
-      asistentes.some((id:string) => !mongoose.isValidObjectId(id))
-    ) {
-      return res
-        .status(400)
-        .json({ message: "IDs de goleadores o asistentes no son válidos" });
-    }
+    
 
     partido.resultado.golesLocal = goles_local;
     partido.resultado.golesVisitante = goles_visitante;

@@ -3,7 +3,7 @@ import TorneoModels, { IOTorneo } from "../models/Torneo.models";
 import Torneo from "../models/Torneo.models";
 import EquipoModel from "../models/Equipo.models";
 import ProximosPartidos from "../models/matcher.models";
-import {  IEquipo } from "entities/equipos";
+import { IEquipo } from "entities/equipos";
 import { ITorneo } from "entities/torneos";
 
 // Crear un nuevo torneo
@@ -50,10 +50,14 @@ export const obtenerTorneos = async (req: Request, res: Response): Promise<any> 
 // Obtener un torneo por ID
 export const obtenerTorneoPorId = async (req: Request, res: Response): Promise<any> => {
 
-  
+
   try {
-    const torneos:ITorneo = await Torneo.findById(req.params.id)
-      .populate({
+    type ITorneoPoblado = Omit<IOTorneo, "equipos"> & {
+      equipos: IEquipo[];
+    };
+
+    const torneos: ITorneoPoblado | null = await Torneo.findById(req.params.id)
+      .populate<{ equipos: IEquipo[] }>({
         path: "equipos",
         select: "nombre logo torneos estadisticasGlobales",
       })
@@ -63,22 +67,20 @@ export const obtenerTorneoPorId = async (req: Request, res: Response): Promise<a
       .populate("sancionados_roja.jugador")
       .populate("sancionados_amarilla.jugador");
 
-
     if (!torneos) {
       return res.status(404).json({ message: "Torneo no encontrado" });
     }
-    
-    
 
-    
 
-    const equiposConEstadisticas = torneos?.equipos.map((equipo) => {
-      const estadisticasDelTorneo = equipo.torneos.find(
+
+
+
+    const equiposConEstadisticas = torneos?.equipos?.map((equipo) => {
+      const estadisticasDelTorneo = equipo?.torneos?.find(
         (torneo) => torneo.torneoId.toString() === req.params.id
       );
-      const {estadisticasGlobales,nombre,logo} = equipo 
+      const { estadisticasGlobales, nombre, logo } = equipo
 
-     console.log({estadisticasGlobales,nombre,logo})
       return {
         _id: equipo._id,
         nombre: nombre,
@@ -111,7 +113,6 @@ export const obtenerTorneoPorId = async (req: Request, res: Response): Promise<a
       }
 
     );
-
 
     return res.status(200).json({ torneo_especifico, torneos });
   } catch (error: unknown) {
