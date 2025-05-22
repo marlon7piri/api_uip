@@ -118,14 +118,34 @@ export const evaluarPartidos = async (req, res) => {
     partidoId,
   } = req.body;
 
+
+
   try {
+
+    // Validar que los IDs sean válidos
+    if (
+      (goleadores && !Array.isArray(goleadores)) ||
+      (asistentes && !Array.isArray(asistentes)) ||
+      goleadores.some((id) => !mongoose.isValidObjectId(id)) ||
+      asistentes.some((id) => !mongoose.isValidObjectId(id))
+    ) {
+      return res
+        .status(400)
+        .json({ message: "IDs de goleadores o asistentes no son válidos" });
+    }
+
+    
     //Buscar ambos equipos
     const equipo_local = await EquipoModels.findById(id_local).populate(
       "torneos"
     );
+
+
     const equipo_visitante = await EquipoModels.findById(id_visitante).populate(
       "torneos"
     );
+    
+   
     const torneo = await TorneoModels.findById(torneoId).populate("goleadores");
 
     const partido = await ProximosPartidos.findById(partidoId)
@@ -140,18 +160,7 @@ export const evaluarPartidos = async (req, res) => {
       return res.status(400).json({ message: "El partido ya se evaluo" });
     }
 
-    // Validar que los IDs sean válidos
-    if (
-      (goleadores && !Array.isArray(goleadores)) ||
-      (asistentes && !Array.isArray(asistentes)) ||
-      goleadores.some((id) => !mongoose.isValidObjectId(id)) ||
-      asistentes.some((id) => !mongoose.isValidObjectId(id))
-    ) {
-      return res
-        .status(400)
-        .json({ message: "IDs de goleadores o asistentes no son válidos" });
-    }
-
+    
     partido.resultado.golesLocal = goles_local;
     partido.resultado.golesVisitante = goles_visitante;
     partido.resultado.asistenciasLocal = asistencias_local;
@@ -167,6 +176,8 @@ export const evaluarPartidos = async (req, res) => {
 
     partido.estado = "finalizado";
 
+
+    
     await partido.save();
 
     await goleadoresTorneo(torneo, goleadores);
@@ -203,9 +214,9 @@ export const evaluarPartidos = async (req, res) => {
     //Hubo un empate
 
     if (partido.tipo === "clasificacion") {
-      console.log(typeof is_draw);
+      console.log(partido.tipo)
       if (is_draw === "true") {
-        console.log("Entre aqui por empate");
+      
         //estadisticas globales
         equipo_local.estadisticasGlobales.partidos_empatados += 1;
         equipo_visitante.estadisticasGlobales.partidos_empatados += 1;
@@ -321,7 +332,6 @@ export const evaluarPartidos = async (req, res) => {
         equipo_visitante.estadisticasGlobales.goles_contra += goles_local;
       }
     }
-
     await equipo_local.save();
     await equipo_visitante.save();
 
