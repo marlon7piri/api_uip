@@ -146,6 +146,10 @@ export const actualizarJugador = async (req: Request, res: Response): Promise<an
   }
 };
 
+export const obtenerJugadorPorUserId = async (req: Request, res: Response): Promise<any> => {
+  
+};
+
 // Eliminar un jugador por ID
 export const eliminarJugador = async (req: Request, res: Response): Promise<any> => {
   try {
