@@ -146,7 +146,7 @@ export const actualizarJugador = async (req: Request, res: Response): Promise<an
   }
 };
 
-export const obtenerJugadorPorUserId = async (req: Request, res: Response) => {
+export const obtenerJugadorPorUserId = async (req: Request, res: Response):Promise<any> => {
   try {
     const jugador = await Jugador.findOne({ userId: req.params.id }).populate(
       "club",
