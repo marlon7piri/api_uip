@@ -1,6 +1,6 @@
 import { Request, Response } from "express"
 import Equipo from "../models/Equipo.models";
-import JugadorModels from "../models/Jugador.models";
+import JugadorModels, { IJugador } from "../models/Jugador.models";
 import Jugador from "../models/Jugador.models";
 
 // Crear un nuevo jugador
@@ -20,40 +20,56 @@ export const crearJugador = async (req: Request, res: Response) => {
   }
 };
 
-// Obtener todos los jugadores
 export const obtenerJugadores = async (req: Request, res: Response): Promise<any> => {
-  const { query } = req.query;
   try {
+    const { page = '1', name = '' } = req.query;
 
+    const parsedPage = parseInt(page as string, 10);
+    const currentPage = isNaN(parsedPage) ? 1 : Math.max(parsedPage, 1);
+    const nameQuery = String(name || "").trim();
 
+    const limit = 5;
+    const skip = (currentPage - 1) * limit;
 
-
-
-    const jugadores = await Jugador.find(
-      query
-        ? {
+    const filtro = nameQuery
+      ? {
           $or: [
-            { nombre: { $regex: query, $options: "i" } },
-            { apellido: { $regex: query, $options: "i" } },
+            { nombre: { $regex: nameQuery, $options: 'i' } },
+            { apellido: { $regex: nameQuery, $options: 'i' } },
           ],
         }
-        : {}
-    ).populate("club", "nombre logo");
+      : {};
 
+    const total = await Jugador.countDocuments(filtro);
 
+    const jugadores = await Jugador.find(filtro)
+      .populate("club", "nombre logo")
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 }) // si usas timestamps
+      .lean();
 
+    const hasMore = skip + jugadores.length < total;
 
-    return res.json(jugadores);
+    return res.json({
+      jugadores,
+      pagination: {
+        total,
+        currentPage,
+        totalPages: Math.ceil(total / limit),
+        hasMore,
+      },
+    });
+
   } catch (error: unknown) {
-
     if (error instanceof Error) {
       res.status(400).json({ message: error.message });
     } else {
       res.status(400).json({ message: "An unknown error occurred" });
     }
-
   }
 };
+
 export const editarJugador = async (req: Request, res: Response): Promise<any> => {
   const jugador = req.body
   const { id } = req.params
@@ -146,7 +162,7 @@ export const actualizarJugador = async (req: Request, res: Response): Promise<an
   }
 };
 
-export const obtenerJugadorPorUserId = async (req: Request, res: Response):Promise<any> => {
+export const obtenerJugadorPorUserId = async (req: Request, res: Response): Promise<any> => {
   try {
     const jugador = await Jugador.findOne({ userId: req.params.id }).populate(
       "club",
@@ -174,7 +190,7 @@ export const obtenerJugadorPorUserId = async (req: Request, res: Response):Promi
     if (error instanceof Error) {
 
       return res.status(500).json({ message: error.message });
-    }else {
+    } else {
       res.status(400).json({ message: "An unknown error occurred" });
     }
   }
@@ -218,6 +234,30 @@ export const obtenerJugadorPorEquipo = async (req: Request, res: Response): Prom
     }
 
     res.json({ jugadores: jugadores, infoClub: equipo });
+  } catch (error: unknown) {
+
+    if (error instanceof Error) {
+      res.status(400).json({ message: error.message });
+    } else {
+      res.status(400).json({ message: "An unknown error occurred" });
+    }
+
+  }
+};
+
+
+
+// Crear un nuevo jugador
+export const crearJugadoresMasivos = async (req: Request, res: Response) => {
+  try {
+
+    for (let i = 0; i < 100; i++) {
+      const jugador = new Jugador<IJugador>({ ...req.body, foto: "" });
+      await jugador.save();
+      res.status(201).json({ message: "jugadores creados" + i });
+    }
+
+
   } catch (error: unknown) {
 
     if (error instanceof Error) {

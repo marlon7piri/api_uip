@@ -12,5 +12,6 @@ router.delete("/delete/:id", isAuth, deleteJugador);
 router.get("/listByEquipo/:id", isAuth, obtenerJugadorPorEquipo);
 router.get("/getById/:id", isAuth, obtenerJugadorPorId);
 router.get("/getByUserId/:id", isAuth, obtenerJugadorPorUserId);
+router.post("/createJugadorMasivo", isAuth, obtenerJugadorPorUserId);
 
 export default router;
