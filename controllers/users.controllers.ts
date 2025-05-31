@@ -4,6 +4,7 @@ import Tokens from "../models/Tokens.models";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import Users from "../models/User.models";
+import { crearJugadorInicial } from "utils/crearJugadorInicial";
 
 const isValidEmail = (email: string) => {
   const patron = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
@@ -40,6 +41,23 @@ const create = async (req: Request, res: Response): Promise<any> => {
     });
     userInstance.password = await userInstance.encryptPassword(password);
     const user = await userInstance.save();
+
+
+    const newUser = {
+          _id: user._id,
+          email: user.email,
+          nombre: nombre,
+          apellido: apellido,
+          clasificacion: user.clasificacion
+    
+        }
+        const isOk = await crearJugadorInicial(newUser)
+    
+        if (isOk) {
+    
+          return res.status(201).json(user);
+        }
+    
 
     
     return res.status(201).json(user);
