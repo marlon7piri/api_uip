@@ -11,7 +11,7 @@ export interface IUser extends Document {
   email: string;
   password: string;
   rol: Rol;
-  clasificacion: Clasificacion;
+  clasificacion: Clasificacion[];
   status: "activo" | "inactivo";
   createdAt?: Date; // Generado automáticamente por `timestamps`
   updatedAt?: Date; // Generado automáticamente por `timestamps`
@@ -28,7 +28,7 @@ const userSchema: Schema<IUser> = new Schema(
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     rol: { type: String, required: true },
-    clasificacion: { type: String, required: true },
+    clasificacion: [{ type: String, required: true }],
     status: { type: String, default: "activo" },
   },
   { timestamps: true }

@@ -1,19 +1,18 @@
-import {Request,Response} from "express"
+import { Request, Response } from "express"
 import { tokenGenerator } from "../helpers/tokenGenerate";
 import Tokens from "../models/Tokens.models";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import Users from "../models/User.models";
 
-const isValidEmail = (email:string) => {
+const isValidEmail = (email: string) => {
   const patron = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
 
   return patron.test(email);
 };
 
 const create = async (req: Request, res: Response): Promise<any> => {
-  const { nameUser, email, password, rol, clasificacion } = req.body;
-
+  const { nameUser, email, password, rol, clasificacion, nombre, apellido } = req.body;
   try {
     const emailUser = await Users.findOne({ email });
 
@@ -31,6 +30,8 @@ const create = async (req: Request, res: Response): Promise<any> => {
       });
     }
     const userInstance = new Users({
+      nombre,
+      apellido,
       nameUser,
       email,
       password,
@@ -40,7 +41,7 @@ const create = async (req: Request, res: Response): Promise<any> => {
     userInstance.password = await userInstance.encryptPassword(password);
     const user = await userInstance.save();
 
-    console.log({ user });
+    
     return res.status(201).json(user);
   } catch (error) {
     console.error("Error en la creación de usuario:", error);
