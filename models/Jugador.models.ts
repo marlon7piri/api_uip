@@ -15,28 +15,26 @@ interface EstadisticasGlobales {
 }
 
 export interface IJugador extends Document {
-  autorId: string;
   nombre: string;
   apellido: string;
   edad: number;
   estatura: number;
   foto: string;
   estadisticasGlobales: EstadisticasGlobales;
-  rol: string;
+  rol: string[];
   email: string;
   estudiante: string;
   status: string;
   club: mongoose.Types.ObjectId;
+  userId: mongoose.Types.ObjectId;
+
   createdAt?: Date;
   updatedAt?: Date;
 }
 
 const jugadorSchema: Schema<IJugador> = new Schema(
   {
-    autorId: {
-      type: String,
-      required: true,
-    },
+
     nombre: { type: String, required: true },
     apellido: { type: String, required: true },
     edad: { type: Number, required: true },
@@ -54,10 +52,11 @@ const jugadorSchema: Schema<IJugador> = new Schema(
       tarjetas_amarillas: { type: Number, default: 0 },
       tarjetas_rojas: { type: Number, default: 0 },
     },
-    rol: { type: String, default: "jugador" },
+    rol: [{ type: String, default: "jugador" }],
     email: { type: String, required: true },
     estudiante: { type: String, required: true },
     status: { type: String, default: "activo" },
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: "users" },
     club: { type: mongoose.Schema.Types.ObjectId, ref: "equipo" },
   },
   {
