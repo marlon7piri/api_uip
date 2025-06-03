@@ -26,7 +26,7 @@ export interface IJugador extends Document {
   estudiante: string;
   status: string;
   club: mongoose.Types.ObjectId;
-  userId: mongoose.Types.ObjectId;
+  userId: string;
 
   createdAt?: Date;
   updatedAt?: Date;
@@ -56,7 +56,7 @@ const jugadorSchema: Schema<IJugador> = new Schema(
     email: { type: String, required: true },
     estudiante: { type: String, required: true },
     status: { type: String, default: "activo" },
-    userId: { type: mongoose.Schema.Types.ObjectId, ref: "users" },
+    userId: { type: String},
     club: { type: mongoose.Schema.Types.ObjectId, ref: "equipo" },
   },
   {

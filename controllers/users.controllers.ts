@@ -44,22 +44,23 @@ const create = async (req: Request, res: Response): Promise<any> => {
 
 
     const newUser = {
-          _id: user._id,
-          email: user.email,
-          nombre: nombre,
-          apellido: apellido,
-          clasificacion: user.clasificacion
-    
-        }
-        const isOk = await crearJugadorInicial(newUser)
-    
-        if (isOk) {
-    
-          return res.status(201).json(user);
-        }
-    
+      _id: user._id,
+      email: user.email,
+      nombre: nombre,
+      apellido: apellido,
+      userId: user._id?.toString(),
+      clasificacion: user.clasificacion
 
-    
+    }
+    const isOk = await crearJugadorInicial(newUser)
+
+    if (isOk) {
+
+      return res.status(201).json(user);
+    }
+
+
+
   } catch (error) {
     console.error("Error en la creación de usuario:", error);
     return res.status(500).json({ message: "Error interno del servidor" });
