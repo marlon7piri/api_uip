@@ -136,12 +136,12 @@ const login = async (req: Request, res: Response): Promise<any> => {
     }
 
     const match = await userData.matchPassword(password);
+    
 
     if (!match) {
-      return res.status(401).send({
-        status: "error",
-        message: "Incorrect password",
-      });
+      
+      
+      return res.status(401).json({ message: "Incorrect password"});
     }
 
     const { nameUser, _id } = userData;
@@ -161,7 +161,7 @@ const login = async (req: Request, res: Response): Promise<any> => {
     });
   } catch (e) {
     console.error("Login error:", e);
-    return res.status(e.code || 500).send({
+    return res.status(e.code || 500).json({
       status: e.status || "error",
       message: e.message || "Internal server error",
     });
