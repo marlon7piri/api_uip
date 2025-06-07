@@ -1,4 +1,4 @@
-import { Request, Response } from "express"
+import { Request, Response } from "express";
 import TorneoModels, { IOTorneo } from "../models/Torneo.models";
 import Torneo from "../models/Torneo.models";
 import EquipoModel from "../models/Equipo.models";
@@ -7,50 +7,51 @@ import { IEquipo } from "entities/equipos";
 import { ITorneo } from "entities/torneos";
 
 // Crear un nuevo torneo
-export const crearTorneo = async (req: Request, res: Response): Promise<any> => {
+export const crearTorneo = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
   try {
     const { nombre, foto, autorId } = req.body;
-
 
     const nuevoTorneo = new Torneo({ autorId, nombre, foto });
     await nuevoTorneo.save();
     res.status(201).json(nuevoTorneo);
   } catch (error: unknown) {
-
     if (error instanceof Error) {
       res.status(400).json({ message: error.message });
     } else {
       res.status(400).json({ message: "An unknown error occurred" });
     }
-
   }
 };
 
 // Obtener todos los torneos
-export const obtenerTorneos = async (req: Request, res: Response): Promise<any> => {
+export const obtenerTorneos = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
   try {
-    const { autorId } = req.query
-
-
-
-    let filtro = { autorId }
     const torneos = await Torneo.find();
+
+    if (!torneos) {
+      res.status(204).json({ message: "No hay torneos" });
+    }
     res.status(200).json(torneos);
   } catch (error: unknown) {
-
     if (error instanceof Error) {
       res.status(400).json({ message: error.message });
     } else {
       res.status(400).json({ message: "An unknown error occurred" });
     }
-
   }
 };
 
 // Obtener un torneo por ID
-export const obtenerTorneoPorId = async (req: Request, res: Response): Promise<any> => {
-
-
+export const obtenerTorneoPorId = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
   try {
     type ITorneoPoblado = Omit<IOTorneo, "equipos"> & {
       equipos: IEquipo[];
@@ -71,63 +72,57 @@ export const obtenerTorneoPorId = async (req: Request, res: Response): Promise<a
       return res.status(404).json({ message: "Torneo no encontrado" });
     }
 
-
-
-
-
     const equiposConEstadisticas = torneos?.equipos?.map((equipo) => {
       const estadisticasDelTorneo = equipo?.torneos?.find(
         (torneo) => torneo.torneoId.toString() === req.params.id
       );
-      const { estadisticasGlobales, nombre, logo } = equipo
+      const { estadisticasGlobales, nombre, logo } = equipo;
 
       return {
         _id: equipo._id,
         nombre: nombre,
         logo: logo,
         estadisticasGlobales: estadisticasGlobales,
-        estadisticasTorneo:
-          estadisticasDelTorneo
-          || null, // Puede ser null si no tiene estadísticas
-
+        estadisticasTorneo: estadisticasDelTorneo || null, // Puede ser null si no tiene estadísticas
       };
     });
     const torneo_especifico = equiposConEstadisticas.filter(
       (equipo) => equipo.estadisticasTorneo !== null
     );
 
-
     // Ordena los equipos por puntos (suponiendo que la propiedad es 'puntos')
-    torneo_especifico.sort(
-      (a, b) => {
-        const difPuntos = b.estadisticasTorneo.estadisticas.puntos -
-          a.estadisticasTorneo.estadisticas.puntos
+    torneo_especifico.sort((a, b) => {
+      const difPuntos =
+        b.estadisticasTorneo.estadisticas.puntos -
+        a.estadisticasTorneo.estadisticas.puntos;
 
-        if (difPuntos !== 0) {
-          return difPuntos
-        }
-        const difGolesA = a.estadisticasTorneo.estadisticas.goles_favor - a.estadisticasTorneo.estadisticas.goles_contra
-        const difGolesB = b.estadisticasTorneo.estadisticas.goles_favor - b.estadisticasTorneo.estadisticas.goles_contra
-        return difGolesB - difGolesA
-
+      if (difPuntos !== 0) {
+        return difPuntos;
       }
-
-    );
+      const difGolesA =
+        a.estadisticasTorneo.estadisticas.goles_favor -
+        a.estadisticasTorneo.estadisticas.goles_contra;
+      const difGolesB =
+        b.estadisticasTorneo.estadisticas.goles_favor -
+        b.estadisticasTorneo.estadisticas.goles_contra;
+      return difGolesB - difGolesA;
+    });
 
     return res.status(200).json({ torneo_especifico, torneos });
   } catch (error: unknown) {
-
     if (error instanceof Error) {
       res.status(400).json({ message: error.message });
     } else {
       res.status(400).json({ message: "An unknown error occurred" });
     }
-
   }
 };
 
 // Actualizar un torneo
-export const actualizarTorneo = async (req: Request, res: Response): Promise<any> => {
+export const actualizarTorneo = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
   try {
     const { nombre, foto } = req.body;
     const torneoActualizado = await Torneo.findByIdAndUpdate(
@@ -140,18 +135,19 @@ export const actualizarTorneo = async (req: Request, res: Response): Promise<any
     }
     res.status(200).json(torneoActualizado);
   } catch (error: unknown) {
-
     if (error instanceof Error) {
       res.status(400).json({ message: error.message });
     } else {
       res.status(400).json({ message: "An unknown error occurred" });
     }
-
   }
 };
 
 // Eliminar un torneo
-export const eliminarTorneo = async (req: Request, res: Response): Promise<any> => {
+export const eliminarTorneo = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
   try {
     const torneoEliminado = await Torneo.findByIdAndDelete(req.params.id);
     if (!torneoEliminado) {
@@ -159,18 +155,19 @@ export const eliminarTorneo = async (req: Request, res: Response): Promise<any> 
     }
     res.status(200).json({ message: "Torneo eliminado correctamente" });
   } catch (error: unknown) {
-
     if (error instanceof Error) {
       res.status(400).json({ message: error.message });
     } else {
       res.status(400).json({ message: "An unknown error occurred" });
     }
-
   }
 };
 
 // Obtener un partido por ID
-export const getPartidoByTorneo = async (req: Request, res: Response): Promise<any> => {
+export const getPartidoByTorneo = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
   try {
     const { id } = req.params;
 
@@ -185,17 +182,18 @@ export const getPartidoByTorneo = async (req: Request, res: Response): Promise<a
 
     res.status(200).json(partido);
   } catch (error: unknown) {
-
     if (error instanceof Error) {
       res.status(400).json({ message: error.message });
     } else {
       res.status(400).json({ message: "An unknown error occurred" });
     }
-
   }
 };
 
-export const getEquiposByTorneo = async (req: Request, res: Response): Promise<any> => {
+export const getEquiposByTorneo = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
   try {
     const { id } = req.params;
     const equipos = await TorneoModels.findById(id)
@@ -207,18 +205,19 @@ export const getEquiposByTorneo = async (req: Request, res: Response): Promise<a
 
     res.status(200).json(equipos);
   } catch (error: unknown) {
-
     if (error instanceof Error) {
       res.status(400).json({ message: error.message });
     } else {
       res.status(400).json({ message: "An unknown error occurred" });
     }
-
   }
 };
 
 // Obtener un partido por ID
-export const registerEquiposByTorneo = async (req: Request, res: Response): Promise<any> => {
+export const registerEquiposByTorneo = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
   const { idTorneo, equipos } = req.body;
 
   try {
@@ -247,12 +246,10 @@ export const registerEquiposByTorneo = async (req: Request, res: Response): Prom
         });
       }
 
-
       equipoFound.torneos.push({
         torneoId: torneo?._id,
 
         estadisticas: {
-
           goles_favor: 0,
           goles_contra: 0,
           partidos_empatados: 0,
@@ -274,12 +271,10 @@ export const registerEquiposByTorneo = async (req: Request, res: Response): Prom
     const torneosaved = await torneo.save();
     return res.status(200).json(torneosaved);
   } catch (error: unknown) {
-
     if (error instanceof Error) {
       res.status(400).json({ message: error.message });
     } else {
       res.status(400).json({ message: "An unknown error occurred" });
     }
-
   }
 };
