@@ -6,17 +6,23 @@ import Equipo from '../models/Equipo.models'
 // Crear un nuevo equipo
 export const crearEquipo = async (req: Request, res: Response): Promise<any> => {
   try {
+    const { autorId } = req.body
+
+    if (!autorId) {
+      res.status(400).json({ message: "El id de autor es requerido" })
+    }
+
     const equipo = new Equipo(req.body);
     await equipo.save();
     res.status(201).json(equipo);
-  } catch (error:unknown) {
+  } catch (error: unknown) {
 
-    if(error instanceof Error){
+    if (error instanceof Error) {
       res.status(400).json({ message: error.message });
-    }else{
-      res.status(400).json({ message: "An unknown error occurred"  });
+    } else {
+      res.status(400).json({ message: "An unknown error occurred" });
     }
-  
+
   }
 };
 
@@ -27,7 +33,7 @@ export const obtenerEquipos = async (req: Request, res: Response): Promise<any> 
     const { autorId } = req.query
     let filtro = { autorId }
 
-   
+
 
     const equipos = await Equipo.find();
 

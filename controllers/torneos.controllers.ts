@@ -5,6 +5,7 @@ import EquipoModel from "../models/Equipo.models";
 import ProximosPartidos from "../models/matcher.models";
 import { IEquipo } from "entities/equipos";
 import { ITorneo } from "entities/torneos";
+import { verifyAutorId } from "utils/verifyautorId";
 
 // Crear un nuevo torneo
 export const crearTorneo = async (
@@ -221,6 +222,17 @@ export const registerEquiposByTorneo = async (
   const { idTorneo, equipos } = req.body;
 
   try {
+
+    console.log( idTorneo, equipos )
+
+    const exist = await verifyAutorId(Torneo, "683f5962b174ef93570a52a8")
+
+    if (!exist) {
+    console.log("paso aca")
+
+      res.status(500).json({ message: "Usted no tiene permitido hacer esta accion." })
+    }
+
     const torneo = await Torneo.findById(idTorneo);
 
     if (!torneo) {
