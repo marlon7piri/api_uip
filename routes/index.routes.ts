@@ -7,8 +7,7 @@ import noticias from "./v1/noticias.routes";
 import matcher from "./v1/matcher.routes";
 import upload from "./v1/upload.routes";
 
-
-export default (app:any) => {
+export default (app: any) => {
   app.use("/api/v1/users", users);
   app.use("/api/v1/torneos", torneos);
   app.use("/api/v1/equipos", equipos);
