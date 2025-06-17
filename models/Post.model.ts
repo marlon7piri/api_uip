@@ -1,8 +1,17 @@
-import { timeStamp } from "console";
-import mongoose from "mongoose";
+import mongoose, { Document, Model, model, Schema } from "mongoose";
 
-const PostSchema = new mongoose.Schema(
+export interface IPost extends Document {
+  titulo: string;
+  url: string;
+  public_id: string;
+  userId: mongoose.Types.ObjectId;
+  createdAt: Date;
+}
+const PostSchema: Schema<IPost> = new mongoose.Schema(
   {
+    titulo: {
+      type: String,
+    },
     url: {
       type: String,
       reqire: true,
@@ -12,14 +21,13 @@ const PostSchema = new mongoose.Schema(
       require: true,
     },
     userId: {
-      type: mongoose.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "users",
-    },
-    createdAt: {
-      default: Date.now(),
     },
   },
   {
     timestamps: true,
   }
 );
+
+export const Post: Model<IPost> = model<IPost>("post", PostSchema);

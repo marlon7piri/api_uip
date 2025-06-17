@@ -2,6 +2,7 @@ import express, { Response, Request } from "express";
 import { v2 as cloudinary } from "cloudinary";
 import multer from "multer";
 import { api_key, api_secret, cloud_name } from "./../config";
+import { Post } from "models/Post.model";
 
 // Configurar Cloudinary
 cloudinary.config({
@@ -49,8 +50,10 @@ export const uploadPhoto = [
   },
 ];
 
+// Middleware de subida de video
 export const uploadVideo = [
   upload.single("video"),
+
   async (req: Request, res: Response): Promise<any> => {
     try {
       if (!req.file) {
@@ -63,18 +66,36 @@ export const uploadVideo = [
       const base64 = req.file.buffer.toString("base64");
       const dataUri = `data:${req.file.mimetype};base64,${base64}`;
 
-      // Subir el video a Cloudinary directamente desde el buffer
+      // Subir el video a Cloudinary
       const result = await cloudinary.uploader.upload(dataUri, {
         resource_type: "video",
         folder: "videos_uip",
       });
 
-      //Aqui podemos guardar la url y el public_id del video del usuario en la base de datos
+      if (!result.url || !result.public_id) {
+        return res
+          .status(500)
+          .json({ message: "No se pudo subir el video a Cloudinary." });
+      }
+
+      // Validar que req.user existe
+      const userId = req.user?.userid;
+      if (!userId) {
+        return res.status(401).json({ message: "Usuario no autenticado." });
+      }
+
+      // Guardar en base de datos
+      const newPost = new Post({
+        url: result.url,
+        public_id: result.public_id,
+        userId: userId,
+      });
+
+      const savedPost = await newPost.save();
 
       return res.status(201).json({
         message: "Video subido correctamente",
-        url: result.secure_url,
-        public_id: result.public_id,
+        post: savedPost,
       });
     } catch (error) {
       console.error("Error al subir el video:", error);
