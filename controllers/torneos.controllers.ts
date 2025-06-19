@@ -6,6 +6,7 @@ import ProximosPartidos from "../models/matcher.models";
 import { IEquipo } from "entities/equipos";
 import { ITorneo } from "entities/torneos";
 import { verifyAutorId } from "utils/verifyautorId";
+import User, { IUser } from "models/User.models";
 
 // Crear un nuevo torneo
 export const crearTorneo = async (
@@ -15,7 +16,21 @@ export const crearTorneo = async (
   try {
     const { nombre, foto, autorId } = req.body;
 
+    const userId = req.user?.userid;
+
+    if (!userId) {
+      res.status(500).json({ message: "No existe el token de acceso" });
+    }
+    const user: IUser = await User.findOne({ _id: userId });
+
+    if (user && user.plan === "free") {
+      return res
+        .status(401)
+        .json({ message: "Su plan no  le permite crear torneos" });
+    }
+
     const nuevoTorneo = new Torneo({ autorId, nombre, foto });
+
     await nuevoTorneo.save();
     res.status(201).json(nuevoTorneo);
   } catch (error: unknown) {

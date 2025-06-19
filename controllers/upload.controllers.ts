@@ -2,7 +2,8 @@ import express, { Response, Request } from "express";
 import { v2 as cloudinary } from "cloudinary";
 import multer from "multer";
 import { api_key, api_secret, cloud_name } from "./../config";
-import { Post } from "models/Post.model";
+import { IPost, Post } from "models/Post.model";
+import { crearPost } from "utils/crearPost";
 
 // Configurar Cloudinary
 cloudinary.config({
@@ -80,12 +81,16 @@ export const uploadVideo = [
 
       // Validar que req.user existe
       const userId = req.user?.userid;
+
+      console.log(req.body.title);
+      const title = req.body.title;
       if (!userId) {
         return res.status(401).json({ message: "Usuario no autenticado." });
       }
 
       // Guardar en base de datos
-      const newPost = new Post({
+      const newPost: IPost = new Post({
+        titulo: title,
         url: result.url,
         public_id: result.public_id,
         userId: userId,
