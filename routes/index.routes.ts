@@ -7,6 +7,7 @@ import noticias from "./v1/noticias.routes";
 import matcher from "./v1/matcher.routes";
 import posts from "./v1/posts.routes";
 import upload from "./v1/upload.routes";
+import checkout from "./v1/checkout.routes";
 
 export default (app: any) => {
   app.use("/api/v1/users", users);
@@ -18,4 +19,5 @@ export default (app: any) => {
   app.use("/api/v1/matcher", matcher);
   app.use("/api/v1/posts", posts);
   app.use("/api/v1/upload", upload);
+  app.use("/api/v1/checkout", checkout);
 };

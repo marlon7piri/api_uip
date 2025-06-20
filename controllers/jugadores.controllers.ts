@@ -1,4 +1,4 @@
-import { Request, Response } from "express"
+import { Request, Response } from "express";
 import Equipo from "../models/Equipo.models";
 import JugadorModels, { IJugador } from "../models/Jugador.models";
 import Jugador from "../models/Jugador.models";
@@ -10,19 +10,20 @@ export const crearJugador = async (req: Request, res: Response) => {
     await jugador.save();
     res.status(201).json(jugador);
   } catch (error: unknown) {
-
     if (error instanceof Error) {
       res.status(400).json({ message: error.message });
     } else {
       res.status(400).json({ message: "An unknown error occurred" });
     }
-
   }
 };
 
-export const obtenerJugadores = async (req: Request, res: Response): Promise<any> => {
+export const obtenerJugadores = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
   try {
-    const { page = '1', name = '' } = req.query;
+    const { page = "1", name = "" } = req.query;
 
     const parsedPage = parseInt(page as string, 10);
     const currentPage = isNaN(parsedPage) ? 1 : Math.max(parsedPage, 1);
@@ -34,8 +35,8 @@ export const obtenerJugadores = async (req: Request, res: Response): Promise<any
     const filtro = nameQuery
       ? {
           $or: [
-            { nombre: { $regex: nameQuery, $options: 'i' } },
-            { apellido: { $regex: nameQuery, $options: 'i' } },
+            { nombre: { $regex: nameQuery, $options: "i" } },
+            { apellido: { $regex: nameQuery, $options: "i" } },
           ],
         }
       : {};
@@ -60,7 +61,6 @@ export const obtenerJugadores = async (req: Request, res: Response): Promise<any
         hasMore,
       },
     });
-
   } catch (error: unknown) {
     if (error instanceof Error) {
       res.status(400).json({ message: error.message });
@@ -70,49 +70,57 @@ export const obtenerJugadores = async (req: Request, res: Response): Promise<any
   }
 };
 
-export const editarJugador = async (req: Request, res: Response): Promise<any> => {
-  const jugador = req.body
-  const { id } = req.params
-  const { autorId } = req.query
+export const editarJugador = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
+  const jugador = req.body;
+  const { id } = req.params;
+  const { autorId } = req.query;
 
   try {
+    const jugadorfound = await JugadorModels.findById(id);
 
-    const jugadorfound = await JugadorModels.findById(id)
-
-    if (jugadorfound && jugadorfound.autorId !== autorId) {
-      return res.status(401).json({ message: "No puede editar este jugador" })
+    if (jugadorfound && jugadorfound?.autorId !== autorId) {
+      return res.status(401).json({ message: "No puede editar este jugador" });
     }
 
-    const updatedplayer = await JugadorModels.findByIdAndUpdate(id, jugador, { new: true })
+    const updatedplayer = await JugadorModels.findByIdAndUpdate(id, jugador, {
+      new: true,
+    });
 
     if (!updatedplayer) {
-      return res.status(404).json({ message: "No se encontro el jugador" })
+      return res.status(404).json({ message: "No se encontro el jugador" });
     }
 
-    return res.status(201).json({ message: "Jugador actualizado", data: updatedplayer })
+    return res
+      .status(201)
+      .json({ message: "Jugador actualizado", data: updatedplayer });
   } catch (error: unknown) {
-
     if (error instanceof Error) {
       res.status(400).json({ message: error.message });
     } else {
       res.status(400).json({ message: "An unknown error occurred" });
     }
-
   }
-}
+};
 
 // Actualizar un jugador por ID
-export const actualizarJugador = async (req:Request, res:Response):Promise<any> => {
+export const actualizarJugador = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
   try {
-
-   
-    const jugador = await Jugador.findOneAndUpdate({ userId: req.params.id }, req.body, {
-      new: true,
-    });
+    const jugador = await Jugador.findOneAndUpdate(
+      { userId: req.params.id },
+      req.body,
+      {
+        new: true,
+      }
+    );
 
     if (!jugador) {
-
-      const { email } = req.body
+      const { email } = req.body;
 
       const jugadorId = await Jugador.findOne({ email });
 
@@ -120,12 +128,15 @@ export const actualizarJugador = async (req:Request, res:Response):Promise<any> 
         return res.status(404).json({ message: "El jugador no existe" });
       }
 
-      const jugadorUpdated = await Jugador.findOneAndUpdate({ _id: jugadorId._id }, { ...req.body, userId: req.params.id }, {
-        new: true,
-      });
+      const jugadorUpdated = await Jugador.findOneAndUpdate(
+        { _id: jugadorId._id },
+        { ...req.body, userId: req.params.id },
+        {
+          new: true,
+        }
+      );
 
-
-      return res.status(200).json(jugadorUpdated)
+      return res.status(200).json(jugadorUpdated);
     }
 
     return res.json(jugador);
@@ -134,7 +145,10 @@ export const actualizarJugador = async (req:Request, res:Response):Promise<any> 
   }
 };
 // Obtener un jugador por ID
-export const obtenerJugadorPorId = async (req: Request, res: Response): Promise<any> => {
+export const obtenerJugadorPorId = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
   try {
     const jugador = await Jugador.findById(req.params.id).populate(
       "club",
@@ -144,54 +158,49 @@ export const obtenerJugadorPorId = async (req: Request, res: Response): Promise<
       return res.status(404).json({ message: "Jugador no encontrado" });
     res.json(jugador);
   } catch (error: unknown) {
-
     if (error instanceof Error) {
       res.status(400).json({ message: error.message });
     } else {
       res.status(400).json({ message: "An unknown error occurred" });
     }
-
   }
 };
 
-export const deleteJugador = async (req: Request, res: Response): Promise<any> => {
+export const deleteJugador = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
   try {
     const jugador = await Jugador.findByIdAndDelete(req.params.id);
     if (!jugador) {
       return res.status(404).json({ message: "Jugador no encontrado" });
-
     }
     return res.status(200).json({ message: "Jugador eliminado" });
   } catch (error: unknown) {
-
     if (error instanceof Error) {
       res.status(400).json({ message: error.message });
     } else {
       res.status(400).json({ message: "An unknown error occurred" });
     }
-
   }
 };
 
-
-
-
-
-export const obtenerJugadorPorUserId = async (req: Request, res: Response): Promise<any> => {
+export const obtenerJugadorPorUserId = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
   try {
     const jugador = await Jugador.findOne({ userId: req.params.id }).populate(
       "club",
       "nombre logo"
     );
     if (!jugador) {
-
-      const { email } = req.query
+      const { email } = req.query;
 
       const jugadorId = await Jugador.findOne({ email }).populate(
         "club",
         "nombre logo"
       );
-
 
       if (!jugadorId) {
         return res.status(404).json({ message: "Jugador no encontrado" });
@@ -201,9 +210,7 @@ export const obtenerJugadorPorUserId = async (req: Request, res: Response): Prom
     }
     return res.json(jugador);
   } catch (error: unknown) {
-
     if (error instanceof Error) {
-
       return res.status(500).json({ message: error.message });
     } else {
       res.status(400).json({ message: "An unknown error occurred" });
@@ -212,25 +219,29 @@ export const obtenerJugadorPorUserId = async (req: Request, res: Response): Prom
 };
 
 // Eliminar un jugador por ID
-export const eliminarJugador = async (req: Request, res: Response): Promise<any> => {
+export const eliminarJugador = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
   try {
     const jugador = await Jugador.findByIdAndDelete(req.params.id);
     if (!jugador)
       return res.status(404).json({ message: "Jugador no encontrado" });
     res.json({ message: "Jugador eliminado correctamente" });
   } catch (error: unknown) {
-
     if (error instanceof Error) {
       res.status(400).json({ message: error.message });
     } else {
       res.status(400).json({ message: "An unknown error occurred" });
     }
-
   }
 };
 
 // Obtener un jugador por ID
-export const obtenerJugadorPorEquipo = async (req: Request, res: Response): Promise<any> => {
+export const obtenerJugadorPorEquipo = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
   try {
     const { id } = req.params;
 
@@ -250,36 +261,27 @@ export const obtenerJugadorPorEquipo = async (req: Request, res: Response): Prom
 
     res.json({ jugadores: jugadores, infoClub: equipo });
   } catch (error: unknown) {
-
     if (error instanceof Error) {
       res.status(400).json({ message: error.message });
     } else {
       res.status(400).json({ message: "An unknown error occurred" });
     }
-
   }
 };
-
-
 
 // Crear un nuevo jugador
 export const crearJugadoresMasivos = async (req: Request, res: Response) => {
   try {
-
     for (let i = 0; i < 100; i++) {
       const jugador = new Jugador<IJugador>({ ...req.body, foto: "" });
       await jugador.save();
       res.status(201).json({ message: "jugadores creados" + i });
     }
-
-
   } catch (error: unknown) {
-
     if (error instanceof Error) {
       res.status(400).json({ message: error.message });
     } else {
       res.status(400).json({ message: "An unknown error occurred" });
     }
-
   }
 };
