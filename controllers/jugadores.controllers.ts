@@ -100,6 +100,39 @@ export const editarJugador = async (req: Request, res: Response): Promise<any> =
 
   }
 }
+
+// Actualizar un jugador por ID
+export const actualizarJugador = async (req:Request, res:Response):Promise<any> => {
+  try {
+
+   
+    const jugador = await Jugador.findOneAndUpdate({ userId: req.params.id }, req.body, {
+      new: true,
+    });
+
+    if (!jugador) {
+
+      const { email } = req.body
+
+      const jugadorId = await Jugador.findOne({ email });
+
+      if (!jugadorId) {
+        return res.status(404).json({ message: "El jugador no existe" });
+      }
+
+      const jugadorUpdated = await Jugador.findOneAndUpdate({ _id: jugadorId._id }, { ...req.body, userId: req.params.id }, {
+        new: true,
+      });
+
+
+      return res.status(200).json(jugadorUpdated)
+    }
+
+    return res.json(jugador);
+  } catch (error) {
+    return res.status(400).json({ message: error.message });
+  }
+};
 // Obtener un jugador por ID
 export const obtenerJugadorPorId = async (req: Request, res: Response): Promise<any> => {
   try {
@@ -142,25 +175,7 @@ export const deleteJugador = async (req: Request, res: Response): Promise<any> =
 
 
 
-// Actualizar un jugador por ID
-export const actualizarJugador = async (req: Request, res: Response): Promise<any> => {
-  try {
-    const jugador = await Jugador.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-    });
-    if (!jugador)
-      return res.status(404).json({ message: "Jugador no encontrado" });
-    res.json(jugador);
-  } catch (error: unknown) {
 
-    if (error instanceof Error) {
-      res.status(400).json({ message: error.message });
-    } else {
-      res.status(400).json({ message: "An unknown error occurred" });
-    }
-
-  }
-};
 
 export const obtenerJugadorPorUserId = async (req: Request, res: Response): Promise<any> => {
   try {
