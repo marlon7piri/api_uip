@@ -21,7 +21,6 @@ export const findPlanMiddleware = async (
       res.status(404).json({ message: "Usuario no encontrado" });
       return;  // Aquí también terminamos la ejecución del middleware.
     }
-
     if (user.plan === "free") {
       res.status(403).json({ message: "Su plan no le permite crear torneos" });
       return;  // Aquí terminamos la ejecución del middleware.
