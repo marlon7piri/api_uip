@@ -2,8 +2,14 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import Tokens from "../models/Tokens.models";
 import { NextFunction, Request, Response } from "express";
 
-const isAuth = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  const token = req.headers['authorization']?.split(' ')[1] || req.headers['token']?.toString();
+const isAuth = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  const token =
+    req.headers["authorization"]?.split(" ")[1] ||
+    req.headers["token"]?.toString();
 
   if (!token) {
     res.status(403).send({
@@ -33,7 +39,16 @@ const isAuth = async (req: Request, res: Response, next: NextFunction): Promise<
         return;
       }
 
-      req.user = decoded;
+      // ✅ Verificamos que decoded sea un objeto y no un string
+      if (
+        typeof decoded === "object" &&
+        decoded !== null &&
+        "userid" in decoded
+      ) {
+        req.user = decoded as { userid: string } & JwtPayload;
+      } else {
+        throw new Error("Token inválido o malformado");
+      }
       next();
     });
   } catch (e) {
