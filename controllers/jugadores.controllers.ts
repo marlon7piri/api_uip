@@ -81,10 +81,6 @@ export const editarJugador = async (
   try {
     const jugadorfound = await JugadorModels.findById(id);
 
-    if (jugadorfound && jugadorfound?.autorId !== autorId) {
-      return res.status(401).json({ message: "No puede editar este jugador" });
-    }
-
     const updatedplayer = await JugadorModels.findByIdAndUpdate(id, jugador, {
       new: true,
     });
