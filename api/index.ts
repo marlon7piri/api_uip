@@ -16,5 +16,7 @@ const connectOnce = async () => {
 
 export default async function mainHandler(req: any, res: any) {
   await connectOnce();
-  app.listen(PORT);
+  app.listen(PORT, () => {
+    console.log("Servidor corriendo");
+  });
 }
