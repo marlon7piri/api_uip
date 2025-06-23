@@ -18,4 +18,4 @@ const handler = async (req: any, res: any) => {
   return server(req, res);
 };
 
-export { handler };
+export default handler;
