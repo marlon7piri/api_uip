@@ -23,6 +23,6 @@
     "esModuleInterop": true,
     "skipDefaultLibCheck": true
   },
-  "include": ["api/**/*", "**/*.ts"],
+  "include": ["**/*.ts"],
   "exclude": ["node_modules", "dist"]
 }
