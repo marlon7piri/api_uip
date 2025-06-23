@@ -1,4 +1,4 @@
-import { Post } from "models/Post.model";
+import { Post } from "../models/Post.model";
 import { Request, Response } from "express";
 
 export const obtenerPosts = async (

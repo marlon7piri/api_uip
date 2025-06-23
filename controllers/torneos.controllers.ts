@@ -4,8 +4,7 @@ import Torneo from "../models/Torneo.models";
 import EquipoModel from "../models/Equipo.models";
 import ProximosPartidos from "../models/matcher.models";
 import { IEquipo } from "entities/equipos";
-import { ITorneo } from "entities/torneos";
-import { verifyAutorId } from "utils/verifyautorId";
+import { verifyAutorId } from "../utils/verifyautorId";
 import User, { IUser } from "models/User.models";
 
 // Crear un nuevo torneo

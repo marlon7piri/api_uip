@@ -2,8 +2,7 @@ import express, { Response, Request } from "express";
 import { v2 as cloudinary } from "cloudinary";
 import multer from "multer";
 import { api_key, api_secret, cloud_name } from "./../config";
-import { IPost, Post } from "models/Post.model";
-import { crearPost } from "utils/crearPost";
+import { IPost, Post } from "../models/Post.model";
 
 // Configurar Cloudinary
 cloudinary.config({
