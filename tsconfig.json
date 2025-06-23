@@ -6,7 +6,9 @@
     "removeComments": true,
     "target": "ES6",
     "baseUrl": "./",
-    
+    "paths": {
+      "utils/*": ["utils/*"]
+    },
     "moduleResolution": "node",
     "sourceMap": true,
     
