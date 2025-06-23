@@ -2,7 +2,6 @@ import app from "../app";
 import serverless from "serverless-http";
 import { ConnectDb } from "../database";
 
-// Asegúrate de conectar a Mongo antes de exportar el handler
 let isConnected = false;
 
 const connectOnce = async () => {
@@ -12,10 +11,10 @@ const connectOnce = async () => {
   }
 };
 
-const handler = async (req: any, res: any) => {
-  await connectOnce();
-  const server = serverless(app);
-  return server(req, res);
-};
+// Inicializa solo una vez
+const handler = serverless(app);
 
-export default handler;
+export default async function mainHandler(req: any, res: any) {
+  await connectOnce();
+  return handler(req, res); // Reutiliza el mismo handler
+}
