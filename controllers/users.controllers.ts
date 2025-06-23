@@ -2,10 +2,8 @@ import { Request, Response } from "express";
 import { tokenGenerator } from "../helpers/tokenGenerate";
 import Tokens from "../models/Tokens.models";
 import jwt from "jsonwebtoken";
-import crypto from "crypto";
-import Users, { IUser } from "../models/User.models";
-import { crearJugadorInicial } from "utils/crearJugadorInicial";
-import { IJugador } from "models/Jugador.models";
+import Users from "../models/User.models";
+import { crearJugadorInicial } from "../utils/crearJugadorInicial";
 
 const isValidEmail = (email: string) => {
   const patron = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
