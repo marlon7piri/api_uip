@@ -21,6 +21,6 @@
     "esModuleInterop": true,
     "skipDefaultLibCheck": true
   },
-  "include": ["./index.ts", "./**/*.ts"],
-  "exclude": ["node_modules/**/*"]
+  "include": ["api/**/*", "**/*.ts"],
+  "exclude": ["node_modules", "dist"]
 }
