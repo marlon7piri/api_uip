@@ -2,10 +2,11 @@ import app from "./app";
 import { ConnectDb } from "./database";
 import dotenv from "dotenv";
 
-// Asegúrate de cargar el archivo correcto
-dotenv.config({
-  path: ".env.development",
-});
+const envFile =
+  process.env.NODE_ENV === "production"
+    ? ".env.production"
+    : ".env.development";
+dotenv.config({ path: envFile });
 
 const PORT = process.env.PORT || 3003;
 

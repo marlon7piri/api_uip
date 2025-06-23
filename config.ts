@@ -1,7 +1,9 @@
 import dotenv from "dotenv";
-dotenv.config();
-
-dotenv.config();
+const envFile =
+  process.env.NODE_ENV === "production"
+    ? ".env.production"
+    : ".env.development";
+dotenv.config({ path: envFile });
 
 export const PORT = process.env.PORT;
 export const MONGODB_URI = process.env.MONGO_URI;
