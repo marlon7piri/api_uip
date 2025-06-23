@@ -11,10 +11,6 @@ import upload from "./v1/upload.routes";
 import checkout from "./v1/checkout.routes";
 
 export default (app: Express) => {
-  // Ruta de prueba
-  app.get("/", (_req, res) => {
-    res.status(200).send("API funcionando 🚀");
-  });
   app.use("/api/v1/users", users);
   app.use("/api/v1/torneos", torneos);
   app.use("/api/v1/equipos", equipos);
