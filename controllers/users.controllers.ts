@@ -1,10 +1,11 @@
-import { Request, Response } from "express"
+import { Request, Response } from "express";
 import { tokenGenerator } from "../helpers/tokenGenerate";
 import Tokens from "../models/Tokens.models";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
-import Users from "../models/User.models";
+import Users, { IUser } from "../models/User.models";
 import { crearJugadorInicial } from "utils/crearJugadorInicial";
+import { IJugador } from "models/Jugador.models";
 
 const isValidEmail = (email: string) => {
   const patron = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
@@ -13,7 +14,8 @@ const isValidEmail = (email: string) => {
 };
 
 const create = async (req: Request, res: Response): Promise<any> => {
-  const { nameUser, email, password, rol, clasificacion, nombre, apellido } = req.body;
+  const { nameUser, email, password, rol, clasificacion, nombre, apellido } =
+    req.body;
   try {
     const emailUser = await Users.findOne({ email });
 
@@ -42,25 +44,19 @@ const create = async (req: Request, res: Response): Promise<any> => {
     userInstance.password = await userInstance.encryptPassword(password);
     const user = await userInstance.save();
 
-
     const newUser = {
       _id: user._id,
       email: user.email,
       nombre: nombre,
       apellido: apellido,
       userId: user._id?.toString(),
-      clasificacion: user.clasificacion
-
-    }
-    const isOk = await crearJugadorInicial(newUser)
+      clasificacion: user.clasificacion,
+    };
+    const isOk = await crearJugadorInicial(newUser);
 
     if (isOk) {
-
       return res.status(201).json(user);
     }
-
-
-
   } catch (error) {
     console.error("Error en la creación de usuario:", error);
     return res.status(500).json({ message: "Error interno del servidor" });
@@ -136,12 +132,9 @@ const login = async (req: Request, res: Response): Promise<any> => {
     }
 
     const match = await userData.matchPassword(password);
-    
 
     if (!match) {
-      
-      
-      return res.status(401).json({ message: "Incorrect password"});
+      return res.status(401).json({ message: "Incorrect password" });
     }
 
     const { nameUser, _id } = userData;
@@ -224,7 +217,9 @@ const listUsers = async (req: Request, res: Response): Promise<any> => {
       res.send({ status: false, message: "Users not found!" });
     }
   } catch (error) {
-    res.status(error.code || 500).send({ status: false, message: error.message });
+    res
+      .status(error.code || 500)
+      .send({ status: false, message: error.message });
   }
 };
 
@@ -275,7 +270,6 @@ const deleteUser = async (req: Request, res: Response): Promise<any> => {
   }
 };
 
-
 export {
   create,
   login,
@@ -286,5 +280,4 @@ export {
   getUser,
   updateUser,
   deleteUser,
-
 };
