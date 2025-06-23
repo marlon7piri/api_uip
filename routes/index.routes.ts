@@ -1,3 +1,4 @@
+import { Express } from "express";
 import users from "./v1/user.routes";
 import torneos from "./v1/torneos.routes";
 import equipos from "./v1/equipos.routes";
@@ -9,7 +10,7 @@ import posts from "./v1/posts.routes";
 import upload from "./v1/upload.routes";
 import checkout from "./v1/checkout.routes";
 
-export default (app: any) => {
+export default (app: Express) => {
   // Ruta de prueba
   app.get("/", (_req, res) => {
     res.status(200).send("API funcionando 🚀");
