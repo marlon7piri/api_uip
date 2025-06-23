@@ -1,6 +1,6 @@
 import express from "express";
-import { uploadPhoto, uploadVideo } from "controllers/upload.controllers";
-import { isAuth } from "middleware/auth";
+import { uploadPhoto, uploadVideo } from "../../controllers/upload.controllers";
+import { isAuth } from "../../middleware/auth";
 
 const RouterUpload = express.Router();
 
