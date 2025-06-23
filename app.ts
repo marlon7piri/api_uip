@@ -4,7 +4,7 @@ import cors from "cors";
 import bodyParser from "body-parser";
 import helmet from "helmet";
 import { rateLimit } from "express-rate-limit";
-import { CORS_ORIGIN } from "config";
+import { CORS_ORIGIN } from "./config";
 
 const app = express();
 // Confía en el proxy de Vercel
