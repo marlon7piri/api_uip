@@ -18,6 +18,21 @@ app.use(helmet());
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutos
   max: 100, // Limita cada IP a 100 peticiones por ventana
+  keyGenerator: (req) => {
+    // fallback seguro en caso de que req.ip sea undefined
+    const ip =
+      req.ip ||
+      req.headers["x-forwarded-for"]?.toString().split(",")[0] ||
+      "unknown";
+    return ip;
+  },
+  handler: (_req, res) => {
+    return res.status(429).json({
+      message: "Demasiadas peticiones, intenta más tarde.",
+    });
+  },
+  legacyHeaders: false, // Desactiva X-RateLimit-* headers antiguos
+  standardHeaders: true, // Usa headers estándar
 });
 
 app.use(limiter);
