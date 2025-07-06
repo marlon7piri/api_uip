@@ -4,6 +4,7 @@ import Tokens from "../models/Tokens.models";
 import jwt from "jsonwebtoken";
 import Users from "../models/User.models";
 import { crearJugadorInicial } from "../utils/crearJugadorInicial";
+import Jugador from "models/Jugador.models";
 
 const isValidEmail = (email: string) => {
   const patron = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
@@ -40,20 +41,23 @@ const create = async (req: Request, res: Response): Promise<any> => {
       clasificacion,
     });
     userInstance.password = await userInstance.encryptPassword(password);
-    const user = await userInstance.save();
 
     const newUser = {
-      _id: user._id,
-      email: user.email,
+      _id: userInstance._id,
+      email: userInstance.email,
       nombre: nombre,
       apellido: apellido,
-      userId: user._id?.toString(),
-      clasificacion: user.clasificacion,
+      userId: userInstance._id?.toString(),
+      clasificacion: userInstance.clasificacion,
     };
-    const isOk = await crearJugadorInicial(newUser);
+    const player = await crearJugadorInicial(newUser);
 
-    if (isOk) {
+    if (player) {
+      const user = await userInstance.save();
       return res.status(201).json(user);
+    } else {
+      await Jugador.findByIdAndDelete(player._id);
+      return res.status(500).json({ message: "Error creando el usuario" });
     }
   } catch (error) {
     console.error("Error en la creación de usuario:", error);

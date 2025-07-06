@@ -23,7 +23,7 @@ export const crearJugadorInicial = async (data: any) => {
     const jugadoSaved = await jugador.save();
 
     if (jugadoSaved) {
-      return true;
+      return jugadoSaved;
     }
   } catch (error) {
     throw new Error("Error creando el jugador");
