@@ -29,7 +29,7 @@ export const obtenerJugadores = async (
     const currentPage = isNaN(parsedPage) ? 1 : Math.max(parsedPage, 1);
     const nameQuery = String(name || "").trim();
 
-    const limit = 5;
+    const limit = 100;
     const skip = (currentPage - 1) * limit;
 
     const filtro = nameQuery
