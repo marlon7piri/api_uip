@@ -14,6 +14,7 @@ export interface ICancha extends Document {
   horario: string;
   telefono?: string;
   precioPorHora?: number;
+  userId:mongoose.Types.ObjectId
   tipo?: "fútbol" | "baloncesto" | "tenis" | "padel" | "multiuso";
   imagenUrl?: string;
   ubicacion: {
@@ -35,6 +36,7 @@ const canchaSchema: Schema = new Schema(
       type: String,
       required: true,
     },
+    userId:{ type: Schema.Types.ObjectId, ref: "users", required: true },
     horario: {
       type: String,
       required: true,
@@ -45,6 +47,7 @@ const canchaSchema: Schema = new Schema(
     precioPorHora: {
       type: Number,
     },
+    
     tipo: {
       type: String,
       enum: ["fútbol", "baloncesto", "tenis", "padel", "multiuso"],
