@@ -140,7 +140,7 @@ const login = async (req: Request, res: Response): Promise<any> => {
     }
 
     const { nameUser, _id } = userData;
-    const token = tokenGenerator({ nameUser, password, _id });
+    const token = tokenGenerator({ nameUser, _id });
 
     const tokensInstance = new Tokens({
       token,

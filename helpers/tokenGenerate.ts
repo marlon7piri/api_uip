@@ -4,7 +4,6 @@ import { JWT_SECRET } from "../config";
 const tokenGenerator = (user) => {
   const payload = {
     user: user.nameUser,
-    password: user.password,
     userid: user._id,
   };
 
