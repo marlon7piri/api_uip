@@ -1,12 +1,14 @@
-import mongoose, { Schema, Document } from 'mongoose'
+import mongoose, { Schema, Document } from "mongoose";
+type Estado = "pendiente" | "confirmado" | "cancelado";
 
 export interface ReservaDocument extends Document {
-  title: string
-  start: Date
-  end: Date
-  allDay?: boolean
-  userId: mongoose.Types.ObjectId
-  canchaId: mongoose.Types.ObjectId
+  title: string;
+  start: Date;
+  end: Date;
+  allDay?: boolean;
+  userId: mongoose.Types.ObjectId;
+  canchaId: mongoose.Types.ObjectId;
+  estado: Estado;
 }
 
 const reservaSchema = new Schema<ReservaDocument>(
@@ -29,19 +31,23 @@ const reservaSchema = new Schema<ReservaDocument>(
     },
     userId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Users',
+      ref: "Users",
       required: true,
     },
     canchaId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Cancha',
+      ref: "Cancha",
       required: true,
+    },
+    estado: {
+      type: String,
+      default: "pendiente",
     },
   },
   {
     timestamps: true, // Crea createdAt y updatedAt automáticamente
   }
-)
+);
 
-const Reserva = mongoose.model<ReservaDocument>('Reserva', reservaSchema)
-export default Reserva
+const Reserva = mongoose.model<ReservaDocument>("Reserva", reservaSchema);
+export default Reserva;
