@@ -1,6 +1,6 @@
-import Reserva from "models/Reserva.models"
+import Reserva from "../models/Reserva.models"
 import {Request,Response} from "express"
-import ChanchaModel from "models/Canchas.models"
+import ChanchaModel from "../models/Canchas.models"
 
 export const crearReserva = async (req:Request,res:Response):Promise<any>=>{
 
