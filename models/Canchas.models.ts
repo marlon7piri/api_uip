@@ -26,7 +26,7 @@ export interface ICancha extends Document {
   updatedAt?: Date;
 }
 
-const canchaSchema: Schema = new Schema(
+const canchaSchema: Schema<ICancha> = new Schema(
   {
     nombre: {
       type: String,

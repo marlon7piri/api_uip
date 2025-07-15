@@ -5,9 +5,11 @@ import ChanchaModel from "../models/Canchas.models"
 export const crearReserva = async (req:Request,res:Response):Promise<any>=>{
 
     try {
-        const {canchaId,userId} = req.body
+        const parametros = req.body
 
-        const foundCancha = await ChanchaModel.findById(canchaId)
+
+        const foundCancha = await ChanchaModel.findOne({_id:parametros.canchaId})
+
 
         if(!foundCancha){
             return res.json({message:'La cancha no existe'}).status(404)
@@ -33,6 +35,8 @@ export const crearReserva = async (req:Request,res:Response):Promise<any>=>{
 export const obtenerReservaByCanchaId = async(req:Request,res:Response)=>{
     try {
         const canchaId=  req.params.id
+
+        console.log({canchaId})
         const cancha = await ChanchaModel.findById(canchaId)
 
          if(!cancha){
