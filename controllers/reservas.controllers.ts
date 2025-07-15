@@ -1,4 +1,4 @@
-import Reserva from "../models/Reserva.models";
+import Reserva, { ReservaDocument } from "../models/Reserva.models";
 import { Request, Response } from "express";
 import ChanchaModel from "../models/Canchas.models";
 
@@ -37,20 +37,21 @@ export const obtenerReservaByCanchaId = async (
   try {
     const canchaId = req.params.id;
 
-    console.log({ canchaId });
     const cancha = await ChanchaModel.findById(canchaId);
 
     if (!cancha) {
-      res.json({ message: "La cancha no existe" }).status(404);
+      return res.status(404).json({ message: "La cancha no existe" });
     }
 
     const reservas = await Reserva.find({ canchaId });
 
     if (!reservas) {
-      res.json({ message: "No existen reservas para esta cancha" }).status(200);
+      return res
+        .status(404)
+        .json({ message: "No existen reservas para esta cancha" });
     }
 
-    res.json(reservas).status(200);
+    return res.status(200).json(reservas);
   } catch (error: unknown) {
     if (error instanceof Error) {
       res.status(400).json({ message: error.message });
@@ -64,21 +65,25 @@ export const confirmarReserva = async (
   res: Response
 ): Promise<any> => {
   try {
-    const canchaId = req.params.id;
+    const reservaId = req.params.id;
 
-    const cancha = await ChanchaModel.findById(canchaId);
+    const reserva = await Reserva.findById(reservaId);
 
-    if (!cancha) {
-      res.json({ message: "La cancha no existe" }).status(404);
+    if (!reserva) {
+      return res.status(404).json({ message: "La reserva no existe" });
     }
 
-    const reservas = await Reserva.find({ canchaId });
+    const reservaUpdated = await Reserva.findByIdAndUpdate(
+      reservaId,
+      {
+        estado: "confirmado",
+      },
+      { new: true }
+    );
 
-    if (!reservas) {
-      res.json({ message: "No existen reservas para esta cancha" }).status(200);
-    }
+    //Aqui se le notificara por correo al usuario que la reserva esta confirmada
 
-    res.json(reservas).status(200);
+    res.status(200).json(reservaUpdated);
   } catch (error: unknown) {
     if (error instanceof Error) {
       res.status(400).json({ message: error.message });
@@ -92,21 +97,25 @@ export const cancelarReserva = async (
   res: Response
 ): Promise<any> => {
   try {
-    const canchaId = req.params.id;
+    const reservaId = req.params.id;
 
-    const cancha = await ChanchaModel.findById(canchaId);
+    const reserva = await Reserva.findById(reservaId);
 
-    if (!cancha) {
-      return res.json({ message: "La cancha no existe" }).status(404);
+    if (!reserva) {
+      return res.status(404).json({ message: "La reserva no existe" });
     }
 
-    const reservas = await Reserva.find({ canchaId });
+    const reservaUpdated = await Reserva.findByIdAndUpdate<ReservaDocument>(
+      reservaId,
+      {
+        estado: "cancelado",
+      },
+      { new: true }
+    );
 
-    if (!reservas) {
-      res.json({ message: "No existen reservas para esta cancha" }).status(200);
-    }
+    //Aqui se le notificara por correo al usuario que la reserva esta confirmada
 
-    res.json(reservas).status(200);
+    res.status(200).json(reservaUpdated);
   } catch (error: unknown) {
     if (error instanceof Error) {
       res.status(400).json({ message: error.message });
