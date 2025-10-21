@@ -11,7 +11,7 @@ export interface ReservaDocument extends Document {
   estado: Estado;
 }
 
-const reservaSchema = new Schema<ReservaDocument>(
+const reservaSchema:Schema<ReservaDocument> = new Schema<ReservaDocument>(
   {
     title: {
       type: String,

@@ -2,6 +2,7 @@ import Jugador from "models/Jugador.models";
 import { Types } from "mongoose";
 
 export const crearJugadorInicial = async (data: any) => {
+
   try {
     const jugador = new Jugador({
       nombre: data.nombre,

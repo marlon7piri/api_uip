@@ -9,6 +9,7 @@ import {
   obtenerJugadorPorUserId,
   deleteJugador,
   actualizarJugador,
+  obtenerGoleadores
 } from "../../controllers/jugadores.controllers";
 import { isAuth } from "../../middleware/auth";
 import { findPlanMiddleware } from "../../utils/findPlan";
@@ -24,5 +25,7 @@ router.get("/listByEquipo/:id", isAuth, obtenerJugadorPorEquipo);
 router.get("/getById/:id", isAuth, obtenerJugadorPorId);
 router.get("/getByUserId/:id", isAuth, obtenerJugadorPorUserId);
 router.post("/createJugadorMasivo", isAuth, obtenerJugadorPorUserId);
+router.get("/goleadores", isAuth, obtenerGoleadores);
+
 
 export default router;

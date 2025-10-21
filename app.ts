@@ -38,7 +38,7 @@ const limiter = rateLimit({
 app.use(limiter);
 app.use(
   cors({
-    origin: CORS_ORIGIN,
+    origin: "*"//CORS_ORIGIN,
   })
 );
 

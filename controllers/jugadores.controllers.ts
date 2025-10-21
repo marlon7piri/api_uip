@@ -25,6 +25,8 @@ export const obtenerJugadores = async (
   try {
     const { page = "1", name = "" } = req.query;
 
+    console.log({name})
+
     const parsedPage = parseInt(page as string, 10);
     const currentPage = isNaN(parsedPage) ? 1 : Math.max(parsedPage, 1);
     const nameQuery = String(name || "").trim();
@@ -281,3 +283,28 @@ export const crearJugadoresMasivos = async (req: Request, res: Response) => {
     }
   }
 };
+
+
+export const obtenerGoleadores =async(req:Request,res:Response)=>{
+  try {
+
+    const jugadores = await JugadorModels.find().populate('club' ,'nombre logo').sort('-estadisticasGlobales.goles')
+
+
+    if(!jugadores){
+      res.status(304).json({ message: 'No hay jugadores' });
+    }
+
+
+    
+    res.status(200).json(jugadores)
+    
+  } catch (error:unknown) {
+    if(error instanceof Error){
+      res.status(400).json({ message: error.message });
+    }else {
+      res.status(400).json({ message: "An unknown error occurred" });
+    }
+    
+  }
+}

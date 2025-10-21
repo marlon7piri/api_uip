@@ -1,6 +1,6 @@
 import Reserva, { ReservaDocument } from "../models/Reserva.models";
 import { Request, Response } from "express";
-import ChanchaModel from "../models/Canchas.models";
+import CanchaModel from "../models/Canchas.models";
 
 export const crearReserva = async (
   req: Request,
@@ -9,7 +9,8 @@ export const crearReserva = async (
   try {
     const parametros = req.body;
 
-    const foundCancha = await ChanchaModel.findOne({
+
+    const foundCancha = await CanchaModel.findOne({
       _id: parametros.canchaId,
     });
 
@@ -36,8 +37,10 @@ export const obtenerReservaByCanchaId = async (
 ): Promise<any> => {
   try {
     const canchaId = req.params.id;
+    console.log({canchaId})
 
-    const cancha = await ChanchaModel.findById(canchaId);
+    const cancha = await CanchaModel.findById(canchaId);
+    console.log({cancha})
 
     if (!cancha) {
       return res.status(404).json({ message: "La cancha no existe" });
@@ -50,7 +53,7 @@ export const obtenerReservaByCanchaId = async (
         .status(404)
         .json({ message: "No existen reservas para esta cancha" });
     }
-
+console.log({reservas})
     return res.status(200).json(reservas);
   } catch (error: unknown) {
     if (error instanceof Error) {

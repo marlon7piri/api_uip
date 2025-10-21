@@ -50,6 +50,8 @@ const create = async (req: Request, res: Response): Promise<any> => {
       userId: userInstance._id?.toString(),
       clasificacion: userInstance.clasificacion,
     };
+
+    console.log(newUser)
     const player = await crearJugadorInicial(newUser);
 
     if (player) {

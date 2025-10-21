@@ -87,7 +87,5 @@ const canchaSchema: Schema<ICancha> = new Schema(
 // 📌 Índice geoespacial 2dsphere
 canchaSchema.index({ ubicacion: "2dsphere" });
 
-const ChanchaModel =
-  mongoose.models.Cancha || mongoose.model<ICancha>("Cancha", canchaSchema);
+export default mongoose.models.Cancha || mongoose.model<ICancha>("Cancha", canchaSchema);
 
-export default ChanchaModel;
