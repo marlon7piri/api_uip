@@ -23,7 +23,8 @@ export interface IOTorneo extends Document {
     jugador: mongoose.Types.ObjectId,
     cantidad: number
   }>,
-  autorId: string
+  autorId: string,
+  fechaInicio:Date
 }
 type ITorneoDoc = Document & IOTorneo;
 
@@ -65,6 +66,9 @@ const torneoSchema: Schema<ITorneoDoc> = new Schema({
   autorId: {
     type: String,
     required: true
+  },
+  fechaInicio:{
+    type:Date
   }
 });
 const Torneo: Model<IOTorneo> = mongoose.model<IOTorneo>("torneo", torneoSchema)
