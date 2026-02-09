@@ -137,6 +137,8 @@ const login = async (req: Request, res: Response): Promise<any> => {
 
     const match = await userData.matchPassword(password);
 
+
+    
     if (!match) {
       return res.status(401).json({ message: "Incorrect password" });
     }

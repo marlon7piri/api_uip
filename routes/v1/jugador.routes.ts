@@ -1,31 +1,12 @@
-import express from "express";
+import { Router } from "express";
+import { JugadorController } from "../../controllers/jugadores.controllers";
 
-import {
-  crearJugador,
-  obtenerJugadores,
-  editarJugador,
-  obtenerJugadorPorEquipo,
-  obtenerJugadorPorId,
-  obtenerJugadorPorUserId,
-  deleteJugador,
-  actualizarJugador,
-  obtenerGoleadores
-} from "../../controllers/jugadores.controllers";
-import { isAuth } from "../../middleware/auth";
-import { findPlanMiddleware } from "../../utils/findPlan";
+const router = Router();
 
-const router = express.Router();
-
-router.post("/create", isAuth, findPlanMiddleware, crearJugador);
-router.get("/list", isAuth, obtenerJugadores);
-router.put("/edit/:id", isAuth, editarJugador);
-router.put("/editByUserId/:id", isAuth, actualizarJugador);
-router.delete("/delete/:id", isAuth, findPlanMiddleware, deleteJugador);
-router.get("/listByEquipo/:id", isAuth, obtenerJugadorPorEquipo);
-router.get("/getById/:id", isAuth, obtenerJugadorPorId);
-router.get("/getByUserId/:id", isAuth, obtenerJugadorPorUserId);
-router.post("/createJugadorMasivo", isAuth, obtenerJugadorPorUserId);
-router.get("/goleadores", isAuth, obtenerGoleadores);
-
+router.post("/", JugadorController.crear);
+router.get("/", JugadorController.listar);
+router.get("/:id", JugadorController.obtenerPorId);
+router.put("/:id", JugadorController.actualizar);
+router.delete("/:id", JugadorController.eliminar);
 
 export default router;

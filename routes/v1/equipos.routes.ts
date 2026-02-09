@@ -1,14 +1,12 @@
-import  express  from "express"
+import { Router } from "express";
+import { EquipoController } from "../../controllers/equipo.controllers";
 
-import { crearEquipo, obtenerEquipoPorId, obtenerEquipoPorPartido, obtenerEquipos,actualizarEquipo }  from "../../controllers/equipo.controllers"
-import  { isAuth }  from "../../middleware/auth"
+const router = Router();
 
-const router = express.Router();
-
-router.post("/create", isAuth, crearEquipo);
-router.get("/list", isAuth, obtenerEquipos);
-router.get("/:id", isAuth, obtenerEquipoPorId);
-router.put("/:id", isAuth, actualizarEquipo);
-router.post("/equiposPorPartidos", isAuth, obtenerEquipoPorPartido);
+router.post("/", EquipoController.crear);
+router.get("/", EquipoController.listar);
+router.get("/:id", EquipoController.obtenerPorId);
+router.put("/:id", EquipoController.actualizar);
+router.delete("/:id", EquipoController.eliminar);
 
 export default router;
