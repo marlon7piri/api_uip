@@ -13,7 +13,7 @@ export default (app: Express) => {
   app.use("/api/v1/torneos",isAuth, torneos);
   app.use("/api/v1/equipos",isAuth, equipos);
   app.use("/api/v1/jugadores",isAuth, jugadores);
-  app.use("/api/v1/matcher",isAuth, matcher);
+  app.use("/api/v1/partidos",isAuth, matcher);
   app.use("/api/v1/cancha",isAuth, cancha);
   app.use("/api/v1/checkout",isAuth, checkout);
 };

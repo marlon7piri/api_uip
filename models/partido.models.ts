@@ -99,7 +99,13 @@ const partidoSchema = new Schema<IPartido>(
     },
 
     eventos: [eventoSchema],
-    resultado: resultadoSchema,
+    resultado: {
+      type: resultadoSchema,
+      default: () => ({
+        golesLocal: 0,
+        golesVisitante: 0,
+      }),
+    },
   },
   { timestamps: true }
 );
@@ -109,6 +115,9 @@ const partidoSchema = new Schema<IPartido>(
    Recalcula goles
 ======================= */
 partidoSchema.pre('save', function (next) {
+  if (!this.resultado) {
+    this.resultado = { golesLocal: 0, golesVisitante: 0 };
+  }
   const golesLocal = this.eventos.filter(
     e => e.tipo === 'gol' && e.equipo.equals(this.local)
   ).length;
