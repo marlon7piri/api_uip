@@ -5,13 +5,13 @@ export class PartidoController {
   static async crear(req: Request, res: Response) {
     const partido = await PartidoService.crearPartido({
       ...req.body,
-      autorId: req.user.id,
+      autorId: req.user.userid,
     });
     res.status(201).json(partido);
   }
 
   static async listar(req: Request, res: Response) {
-    const partidos = await PartidoService.listarPartidos(req.user.id);
+    const partidos = await PartidoService.listarPartidos(req.user.userid);
     res.json(partidos);
   }
 

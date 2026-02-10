@@ -4,10 +4,13 @@ import { EquipoService } from "../services/equipo.service";
 export class EquipoController {
   static async crear(req: Request, res: Response) {
     try {
+      console.log({ req})
       const equipo = await EquipoService.crearEquipo({
         ...req.body,
-        autorId: req.user.id,
+        autorId: req.user.userid,
       });
+      
+
       res.status(201).json(equipo);
     } catch (error) {
       res.status(500).json({ message: "Error al crear equipo" });
@@ -15,7 +18,7 @@ export class EquipoController {
   }
 
   static async listar(req: Request, res: Response) {
-    const equipos = await EquipoService.obtenerEquipos(req.user.id);
+    const equipos = await EquipoService.obtenerEquipos(req.user.userid);
     res.json(equipos);
   }
 

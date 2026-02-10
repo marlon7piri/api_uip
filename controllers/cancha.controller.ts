@@ -39,7 +39,6 @@ export const obtenerCanchaPorId = async (req: Request, res: Response) => {
 // ✅ Obtener una cancha por ID
 export const obtenerCanchaPorUserId = async (req: Request, res: Response) => {
   try {
-    console.log(req.params.id)
     const cancha = await Cancha.find({userId:req.params.id});
 
     if (!cancha) return res.status(404).json({ error: "Cancha no encontrada" });

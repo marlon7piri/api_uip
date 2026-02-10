@@ -19,7 +19,7 @@ interface EstadisticasTorneo extends EstadisticasBase {
 }
 
 interface ParticipacionTorneo {
-  torneoId: mongoose.Types.ObjectId;
+  torneoId?: mongoose.Types.ObjectId;
   grupo?: string; // A, B, C... (si aplica)
   estadisticas: EstadisticasTorneo;
 }
@@ -31,11 +31,11 @@ interface ParticipacionTorneo {
 export interface IEquipo extends Document {
   autorId: string;
   nombre: string;
-  logo: string;
+  logo?: string;
 
   estadisticasGlobales: EstadisticasBase;
 
-  torneos: ParticipacionTorneo[];
+  torneos?: ParticipacionTorneo[];
 
   createdAt?: Date;
   updatedAt?: Date;
@@ -71,7 +71,7 @@ const ParticipacionTorneoSchema = new Schema(
     torneoId: {
       type: Schema.Types.ObjectId,
       ref: "torneo",
-      required: true,
+      
     },
     grupo: {
       type: String,
@@ -100,7 +100,6 @@ const equipoSchema: Schema<IEquipo> = new Schema(
 
     logo: {
       type: String,
-      required: true,
     },
 
     estadisticasGlobales: {

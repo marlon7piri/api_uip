@@ -13,7 +13,7 @@ const isValidEmail = (email: string) => {
 };
 
 const create = async (req: Request, res: Response): Promise<any> => {
-  const { nameUser, email, password, rol, clasificacion, nombre, apellido } =
+  const {  email, password,nombre ,username} =
     req.body;
   try {
     const emailUser = await Users.findOne({ email });
@@ -24,21 +24,13 @@ const create = async (req: Request, res: Response): Promise<any> => {
       });
     }
 
-    const nameUserExist = await Users.findOne({ nameUser });
 
-    if (nameUserExist) {
-      return res.status(409).json({
-        messages: "El nombre de usuario ya esta en uso",
-      });
-    }
+   
     const userInstance = new Users({
       nombre,
-      apellido,
-      nameUser,
+      username,
       email,
       password,
-      rol,
-      clasificacion,
     });
     userInstance.password = await userInstance.encryptPassword(password);
 
@@ -46,12 +38,9 @@ const create = async (req: Request, res: Response): Promise<any> => {
       _id: userInstance._id,
       email: userInstance.email,
       nombre: nombre,
-      apellido: apellido,
       userId: userInstance._id?.toString(),
-      clasificacion: userInstance.clasificacion,
     };
 
-    console.log(newUser)
     const player = await crearJugadorInicial(newUser);
 
     if (player) {
@@ -119,7 +108,7 @@ const login = async (req: Request, res: Response): Promise<any> => {
   const { username, password } = req.body;
 
   try {
-    const userData = await Users.findOne({ nameUser: username });
+    const userData = await Users.findOne({username });
 
     if (!userData) {
       return res.status(404).send({
@@ -143,8 +132,8 @@ const login = async (req: Request, res: Response): Promise<any> => {
       return res.status(401).json({ message: "Incorrect password" });
     }
 
-    const { nameUser, _id } = userData;
-    const token = tokenGenerator({ nameUser, _id });
+    const {  _id } = userData;
+    const token = tokenGenerator({ _id });
 
     const tokensInstance = new Tokens({
       token,

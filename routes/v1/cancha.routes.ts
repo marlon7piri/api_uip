@@ -7,7 +7,7 @@ import {
   actualizarCancha,
   eliminarCancha,
   obtenerCanchasCercanas,
-} from "../../controllers/cancha.controllers";
+} from "../../controllers/cancha.controller";
 import { isAuth } from "middleware/auth";
 
 const router = express.Router();

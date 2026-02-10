@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { PartidoController } from "../../controllers/partido.controllers";
+import { PartidoController } from "../../controllers/partido.controller";
 
 const router = Router();
 

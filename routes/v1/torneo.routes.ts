@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { TorneoController } from "../../controllers/torneo.controllers";
+import { TorneoController } from "../../controllers/torneo.controller";
 
 const router = Router();
 

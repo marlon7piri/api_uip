@@ -8,7 +8,8 @@ type TypePlan = "premium" | "free";
 
 // Interfaz para el documento de usuario
 export interface IUser extends Document {
-  nameUser: string;
+  username:string;
+  nombre: string;
   email: string;
   password: string;
   rol: Rol;
@@ -26,11 +27,12 @@ export interface IUser extends Document {
 // Esquema para el usuario
 const userSchema: Schema<IUser> = new Schema(
   {
-    nameUser: { type: String, required: true, unique: true },
+    username: { type: String, required: true, unique: true },
+    nombre: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    rol: { type: String, required: true },
-    clasificacion: [{ type: String, required: true }],
+    rol: { type: String, required: true,default:"client" },
+    clasificacion: [{ type: String, required: true,default:'jugador' }],
     plan: {
       type: String,
       default: "free",

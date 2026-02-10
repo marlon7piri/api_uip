@@ -28,8 +28,8 @@ export class EquipoService {
   ========================= */
 
   static async agregarEquipoATorneo(
-    equipoId: string,
     torneoId: string,
+    equipoId: string,
     grupo?: string
   ) {
     return Equipo.findByIdAndUpdate(
