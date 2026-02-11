@@ -39,6 +39,20 @@ export class TorneoController {
     res.json({ message: "Equipo agregado al torneo" });
   }
 
+  static async equipos(req: Request, res: Response) {
+    const equipos = await TorneoService.obtenerEquipos(req.params.id);
+    res.json(equipos);
+  }
+
+  static async obtenerPorId(req: Request, res: Response) {
+    try {
+      const torneo = await TorneoService.obtenerTorneoCompleto(req.params.id);
+      res.json(torneo);
+    } catch (error) {
+      res.status(404).json({ message: "Torneo no encontrado" });
+    }
+  }
+
   /* =========================
      CREAR GRUPOS
   ========================= */
@@ -52,4 +66,6 @@ export class TorneoController {
 
     res.json({ message: "Grupos creados correctamente" });
   }
+
+
 }

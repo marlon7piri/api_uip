@@ -23,6 +23,7 @@ export class EquipoService {
     return Equipo.findByIdAndDelete(id);
   }
 
+
   /* =========================
      TORNEOS
   ========================= */
