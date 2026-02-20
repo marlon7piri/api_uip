@@ -3,6 +3,7 @@ import Equipo from "../models/Equipo.models";
 import { EquipoTorneoDTO } from "dtos/equipo.dto";
 import { GrupoDTO } from "dtos/grupo.dto";
 import { TorneoResponseDTO } from "dtos/torneo.dto";
+import { ordenarTabla } from "utils/ordenarTabla.helper";
 
 export class TorneoService {
 
@@ -49,7 +50,6 @@ export class TorneoService {
 
         (t: any) => t.torneoId.toString() === torneoId
       );
-      console.log(participacion)
       return {
         _id: e._id,
         nombre: e.nombre,
@@ -111,16 +111,20 @@ export class TorneoService {
     let gruposResponse: GrupoDTO[] | undefined;
 
     if (torneo.formato === "grupos" && torneo.grupos) {
-      gruposResponse = torneo.grupos.map(grupo => ({
-        nombre: grupo.nombre,
-        equipos: grupo.equipos
+      gruposResponse = torneo.grupos.map(grupo => {
+        const equiposGrupo = grupo.equipos
           .map(equipoId =>
             equiposNormalizados.find(
               e => e._id === equipoId.toString()
             )
           )
-          .filter(Boolean) as EquipoTorneoDTO[],
-      }));
+          .filter(Boolean) as EquipoTorneoDTO[];
+
+        return {
+          nombre: grupo.nombre,
+          equipos: ordenarTabla(equiposGrupo),
+        };
+      });
     }
 
     /* =========================
