@@ -18,6 +18,11 @@ export class PartidoService {
       .populate("local visitante torneoId cancha");
   }
 
+  static async listarPartidosAmistosos(autorId: string) {
+    return ProximoPartido.find({tipo:'amistoso'})
+      .populate("local visitante  cancha");
+  }ß
+
   static async obtenerPorId(id: string) {
     return ProximoPartido.findById(id)
       .populate("local visitante torneoId cancha");

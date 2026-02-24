@@ -5,6 +5,7 @@ const router = Router();
 
 router.post("/", PartidoController.crear);
 router.get("/", PartidoController.listar);
+router.get("/amistosos", PartidoController.listarAmistosos);
 router.get("/:id", PartidoController.obtener);
 
 router.post("/:id/evento", PartidoController.evento);

@@ -14,6 +14,10 @@ export class PartidoController {
     const partidos = await PartidoService.listarPartidos(req.user.userid);
     res.json(partidos);
   }
+  static async listarAmistosos(req: Request, res: Response) {
+    const partidos = await PartidoService.listarPartidosAmistosos(req.user.userid);
+    res.json(partidos);
+  }
 
   static async obtener(req: Request, res: Response) {
     const partido = await PartidoService.obtenerPorId(req.params.id);
@@ -36,4 +40,6 @@ export class PartidoController {
     const partido = await PartidoService.finalizarPartido(req.params.id);
     res.json(partido);
   }
+  
+  
 }
