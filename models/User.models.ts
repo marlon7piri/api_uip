@@ -3,7 +3,6 @@ import mongoose, { Schema, Document, Model } from "mongoose";
 import bcrypt from "bcryptjs";
 
 type Rol = "admin" | "client";
-type Clasificacion = "jugador" | "entrenador" | "organizador";
 type TypePlan = "premium" | "free";
 
 // Interfaz para el documento de usuario
@@ -13,7 +12,6 @@ export interface IUser extends Document {
   email: string;
   password: string;
   rol: Rol;
-  clasificacion: Clasificacion[];
   status: "activo" | "inactivo";
   plan: TypePlan;
   createdAt?: Date; // Generado automáticamente por `timestamps`
@@ -32,7 +30,6 @@ const userSchema: Schema<IUser> = new Schema(
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     rol: { type: String, required: true,default:"client" },
-    clasificacion: [{ type: String, required: true,default:'jugador' }],
     plan: {
       type: String,
       default: "free",

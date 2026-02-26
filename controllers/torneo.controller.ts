@@ -19,6 +19,8 @@ export class TorneoController {
      LISTAR TORNEOS
   ========================= */
   static async listar(req: Request, res: Response) {
+    console.log(req.user.userid)
+
     const torneos = await TorneoService.listar(req.user.userid);
     res.json(torneos);
   }

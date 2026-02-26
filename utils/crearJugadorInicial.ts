@@ -5,7 +5,6 @@ export const crearJugadorInicial = async (data: any) => {
 
   try {
 
-    console.log({data})
     const jugador = new Jugador({
       nombre: data.nombre,
       edad: 18,
@@ -15,7 +14,6 @@ export const crearJugadorInicial = async (data: any) => {
         posicion: "Centro Campista",
       },
 
-      rol: data.clasificacion ? data.clasificacion : 'jugador',
       userId: data?.userId?.toString(),
       club: new Types.ObjectId(process.env.ID_EQUIPO_AGENTE_LIBRE),
     });

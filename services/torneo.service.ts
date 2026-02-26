@@ -30,7 +30,7 @@ export class TorneoService {
      LISTAR TORNEOS
   ========================= */
   static async listar(autorId: string) {
-    return Torneo.find({ autorId })
+    return Torneo.find()
       .populate("equipos")
       .lean();
   }
