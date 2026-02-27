@@ -6,8 +6,8 @@ export class EquipoService {
     return Equipo.create(data);
   }
 
-  static async obtenerEquipos(autorId: string) {
-    return Equipo.find({ autorId });
+  static async obtenerEquipos() {
+    return Equipo.find();
   }
 
   static async obtenerEquipoPorId(id: string) {

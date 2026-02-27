@@ -18,7 +18,7 @@ export class EquipoController {
   }
 
   static async listar(req: Request, res: Response) {
-    const equipos = await EquipoService.obtenerEquipos(req.user.userid);
+    const equipos = await EquipoService.obtenerEquipos();
     res.json(equipos);
   }
 
