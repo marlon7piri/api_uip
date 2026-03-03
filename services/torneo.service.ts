@@ -1,4 +1,4 @@
-import Torneo from "../models/Torneo.models";
+import Torneo, { ITorneo } from "../models/Torneo.models";
 import Equipo from "../models/Equipo.models";
 import { EquipoTorneoDTO } from "dtos/equipo.dto";
 import { GrupoDTO } from "dtos/grupo.dto";
@@ -10,7 +10,9 @@ export class TorneoService {
   /* =========================
      CREAR TORNEO
   ========================= */
-  static async crearTorneo(data: any) {
+  static async crearTorneo(data: ITorneo) {
+
+   
     if (data.formato === "grupos") {
       const grupos = Array.from(
         { length: data.cantidadGrupos },
@@ -169,56 +171,70 @@ export class TorneoService {
      AGREGAR EQUIPO
   ========================= */
   static async agregarEquipo(
-    torneoId: string,
-    equipoId: string,
-    grupoNombre?: string
-  ) {
-    const torneo = await Torneo.findById(torneoId);
-    if (!torneo) throw new Error("Torneo no encontrado");
+  torneoId: string,
+  equipoId: string,
+  grupoNombre?: string
+) {
+  const torneo = await Torneo.findById(torneoId);
+  if (!torneo) throw new Error("Torneo no encontrado");
 
-    // evitar duplicados
-    if (!torneo.equipos.some(e => e.equals(equipoId))) {
-      torneo.equipos.push(equipoId as any);
+  // agregar a lista general si no existe
+  if (!torneo.equipos.some(e => e.equals(equipoId))) {
+    torneo.equipos.push(equipoId as any);
+  }
+
+  if (torneo.formato === "grupos") {
+    if (!grupoNombre) {
+      throw new Error("Debe indicar el grupo");
     }
 
-    // grupos
-    if (torneo.formato === "grupos") {
-      if (!grupoNombre) {
-        throw new Error("Debe indicar el grupo");
-      }
+    // 🔥 eliminar de cualquier grupo previo
+    torneo.grupos?.forEach(g => {
+      g.equipos = g.equipos.filter(
+        e => !e.equals(equipoId)
+      );
+    });
 
-      const grupo = torneo.grupos?.find(g => g.nombre === grupoNombre);
-      if (!grupo) throw new Error("Grupo no encontrado");
+    const grupo = torneo.grupos?.find(g => g.nombre === grupoNombre);
+    if (!grupo) throw new Error("Grupo no encontrado");
 
-      if (!grupo.equipos.some(e => e.equals(equipoId))) {
-        grupo.equipos.push(equipoId as any);
+    grupo.equipos.push(equipoId as any);
+  }
+
+  await torneo.save();
+
+  // 🔥 actualizar o insertar participación en equipo
+  await Equipo.updateOne(
+    { _id: equipoId, "torneos.torneoId": torneo._id },
+    {
+      $set: {
+        "torneos.$.grupo": grupoNombre ?? null
       }
     }
+  );
 
-    await torneo.save();
-
-    // inicializar estadísticas del equipo en el torneo
-    await Equipo.updateOne(
-      { _id: equipoId, "torneos.torneoId": { $ne: torneo._id } },
-      {
-        $push: {
-          torneos: {
-            torneoId: torneo._id,
-            estadisticas: {
-              puntos: 0,
-              goles_favor: 0,
-              goles_contra: 0,
-              asistencias: 0,
-              partidos_jugados: 0,
-              partidos_ganados: 0,
-              partidos_perdidos: 0,
-              partidos_empatados: 0,
-            },
+  await Equipo.updateOne(
+    { _id: equipoId, "torneos.torneoId": { $ne: torneo._id } },
+    {
+      $push: {
+        torneos: {
+          torneoId: torneo._id,
+          grupo: grupoNombre ?? null,
+          estadisticas: {
+            puntos: 0,
+            goles_favor: 0,
+            goles_contra: 0,
+            asistencias: 0,
+            partidos_jugados: 0,
+            partidos_ganados: 0,
+            partidos_perdidos: 0,
+            partidos_empatados: 0,
           },
         },
-      }
-    );
+      },
+    }
+  );
 
-    return torneo;
-  }
+  return torneo;
+}
 }

@@ -7,13 +7,27 @@ export class TorneoController {
      CREAR TORNEO
   ========================= */
   static async crear(req: Request, res: Response) {
+  try {
+    const { fechaInicio } = req.body;
+
+    if (!fechaInicio) {
+      return res
+        .status(400)
+        .json({ message: 'La fecha de inicio es obligatoria' });
+    }
+
     const torneo = await TorneoService.crearTorneo({
       ...req.body,
       autorId: req.user.userid,
     });
 
-    res.status(201).json(torneo);
+    return res.status(201).json(torneo);
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Error al crear torneo' });
   }
+}
 
   /* =========================
      LISTAR TORNEOS
