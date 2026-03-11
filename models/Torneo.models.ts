@@ -54,5 +54,11 @@ const torneoSchema = new Schema<ITorneo>(
   { timestamps: true }
 );
 
+// 🔥 INDEX DE TEXTO
+torneoSchema.index({ nombre: "text" });
+
+// Opcional: para ordenar rápido por fecha
+torneoSchema.index({ createdAt: -1 });
+
 const Torneo: Model<ITorneo> = mongoose.model("torneo", torneoSchema);
 export default Torneo;

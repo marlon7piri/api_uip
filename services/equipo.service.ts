@@ -6,8 +6,40 @@ export class EquipoService {
     return Equipo.create(data);
   }
 
-  static async obtenerEquipos() {
-    return Equipo.find();
+  static async obtenerEquipos({
+    page = 1,
+    limit = 20,
+    search = "",
+  }: {
+    page?: number;
+    limit?: number;
+    search?: string;
+  }) {
+    const skip = (page - 1) * limit;
+
+    const filter: any = {};
+
+    if (search) {
+      filter.nombre = {
+        $regex: search,
+        $options: "i", // case insensitive
+      };
+    }
+
+    const [data, total] = await Promise.all([
+      Equipo.find(filter)
+        .sort({ nombre: 1 })
+        .skip(skip)
+        .limit(limit),
+      Equipo.countDocuments(filter),
+    ]);
+
+    return {
+      data,
+      total,
+      totalPages: Math.ceil(total / limit),
+      page,
+    };
   }
 
   static async obtenerEquipoPorId(id: string) {

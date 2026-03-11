@@ -4,12 +4,12 @@ import { EquipoService } from "../services/equipo.service";
 export class EquipoController {
   static async crear(req: Request, res: Response) {
     try {
-      console.log({ req})
+      console.log({ req })
       const equipo = await EquipoService.crearEquipo({
         ...req.body,
         autorId: req.user.userid,
       });
-      
+
 
       res.status(201).json(equipo);
     } catch (error) {
@@ -18,8 +18,22 @@ export class EquipoController {
   }
 
   static async listar(req: Request, res: Response) {
-    const equipos = await EquipoService.obtenerEquipos();
-    res.json(equipos);
+    try {
+      const page = Number(req.query.page) || 1;
+      const limit = Number(req.query.limit) || 20;
+      const search = (req.query.search as string) || "";
+
+      
+      const equipos = await EquipoService.obtenerEquipos({
+        page,
+        limit,
+        search,
+      });
+
+      res.json(equipos);
+    } catch (error) {
+      res.status(500).json({ message: "Error al obtener equipos" });
+    }
   }
 
   static async obtenerPorId(req: Request, res: Response) {

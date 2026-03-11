@@ -1,24 +1,24 @@
-import { EquipoTorneoDTO } from "../dtos/equipo.dto";
+// utils/ordenarTabla.helper.ts
 
-export function ordenarTabla(
-  equipos: EquipoTorneoDTO[]
-): EquipoTorneoDTO[] {
+export const ordenarTabla = (equipos: any[]) => {
   return equipos.sort((a, b) => {
-    const A = a.estadisticasTorneo;
-    const B = b.estadisticasTorneo;
-
-    if (B.puntos !== A.puntos) {
-      return B.puntos - A.puntos;
+    if (b.estadisticasTorneo.puntos !== a.estadisticasTorneo.puntos) {
+      return b.estadisticasTorneo.puntos - a.estadisticasTorneo.puntos;
     }
 
-    if (B.diferencia_goles !== A.diferencia_goles) {
-      return B.diferencia_goles - A.diferencia_goles;
+    if (
+      b.estadisticasTorneo.diferencia_goles !==
+      a.estadisticasTorneo.diferencia_goles
+    ) {
+      return (
+        b.estadisticasTorneo.diferencia_goles -
+        a.estadisticasTorneo.diferencia_goles
+      );
     }
 
-    if (B.goles_favor !== A.goles_favor) {
-      return B.goles_favor - A.goles_favor;
-    }
-
-    return a.nombre.localeCompare(b.nombre);
+    return (
+      b.estadisticasTorneo.goles_favor -
+      a.estadisticasTorneo.goles_favor
+    );
   });
-}
+};

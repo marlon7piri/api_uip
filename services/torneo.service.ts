@@ -136,7 +136,7 @@ export class TorneoService {
       ...torneo,
       _id: torneo._id.toString(),
       grupos: gruposResponse,
-      equipos: equiposNormalizados,
+      equipos: ordenarTabla(equiposNormalizados),
     };
   }
   /* =========================
@@ -178,17 +178,22 @@ export class TorneoService {
   const torneo = await Torneo.findById(torneoId);
   if (!torneo) throw new Error("Torneo no encontrado");
 
-  // agregar a lista general si no existe
+  /* =========================
+     AGREGAR A LISTA GENERAL
+  ========================= */
   if (!torneo.equipos.some(e => e.equals(equipoId))) {
     torneo.equipos.push(equipoId as any);
   }
 
+  /* =========================
+     MANEJO DE GRUPOS
+  ========================= */
   if (torneo.formato === "grupos") {
     if (!grupoNombre) {
       throw new Error("Debe indicar el grupo");
     }
 
-    // 🔥 eliminar de cualquier grupo previo
+    // eliminar de cualquier grupo previo
     torneo.grupos?.forEach(g => {
       g.equipos = g.equipos.filter(
         e => !e.equals(equipoId)
@@ -203,8 +208,12 @@ export class TorneoService {
 
   await torneo.save();
 
-  // 🔥 actualizar o insertar participación en equipo
-  await Equipo.updateOne(
+  /* =========================
+     ACTUALIZAR PARTICIPACIÓN EN EQUIPO
+  ========================= */
+
+  // 1️⃣ Intentar actualizar si ya existe participación
+  const updateResult = await Equipo.updateOne(
     { _id: equipoId, "torneos.torneoId": torneo._id },
     {
       $set: {
@@ -213,28 +222,35 @@ export class TorneoService {
     }
   );
 
-  await Equipo.updateOne(
-    { _id: equipoId, "torneos.torneoId": { $ne: torneo._id } },
-    {
-      $push: {
-        torneos: {
-          torneoId: torneo._id,
-          grupo: grupoNombre ?? null,
-          estadisticas: {
-            puntos: 0,
-            goles_favor: 0,
-            goles_contra: 0,
-            asistencias: 0,
-            partidos_jugados: 0,
-            partidos_ganados: 0,
-            partidos_perdidos: 0,
-            partidos_empatados: 0,
+  // 2️⃣ Si no existía, crearla
+  if (updateResult.matchedCount === 0) {
+    await Equipo.updateOne(
+      { _id: equipoId },
+      {
+        $push: {
+          torneos: {
+            torneoId: torneo._id,
+            grupo: grupoNombre ?? null,
+            estadisticas: {
+              puntos: 0,
+              goles_favor: 0,
+              goles_contra: 0,
+              asistencias: 0,
+              partidos_jugados: 0,
+              partidos_ganados: 0,
+              partidos_perdidos: 0,
+              partidos_empatados: 0,
+            },
           },
         },
-      },
-    }
-  );
+      }
+    );
+  }
 
-  return torneo;
+  /* =========================
+     DEVOLVER MISMO DTO QUE GET
+  ========================= */
+
+  return await this.obtenerTorneoCompleto(torneoId);
 }
 }
