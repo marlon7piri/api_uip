@@ -14,7 +14,8 @@ export class PartidoService {
   }
 
   static async listarPartidos(autorId: string) {
-    return ProximoPartido.find({ autorId })
+    //return ProximoPartido.find({ autorId })
+    return ProximoPartido.find()
       .populate("local visitante torneoId cancha");
   }
 

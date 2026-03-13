@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { PartidoService } from "../services/partido.service";
+import { io } from "app";
 
 export class PartidoController {
   static async crear(req: Request, res: Response) {
@@ -7,7 +8,12 @@ export class PartidoController {
       ...req.body,
       autorId: req.user.userid,
     });
-    res.status(201).json(partido);
+    // Poblamos los datos necesarios para que el FlatList lo muestre bien de inmediato
+    const partidoPoblado = await partido.populate("local visitante torneoId cancha");
+    io.emit('partido_creado', partidoPoblado)
+    res.status(201).json(partidoPoblado);
+
+
   }
 
   static async listar(req: Request, res: Response) {
@@ -20,6 +26,7 @@ export class PartidoController {
   }
 
   static async obtener(req: Request, res: Response) {
+    console.log(req.params.id)
     const partido = await PartidoService.obtenerPorId(req.params.id);
     if (!partido) return res.status(404).json({ message: "No encontrado" });
     res.json(partido);
@@ -33,6 +40,13 @@ export class PartidoController {
       equipo,
       tipo
     );
+
+    const partidoPoblado = await partido.populate("local visitante torneoId cancha");
+
+    // .to(id) envía el mensaje solo a los que están en esa sala
+    io.to(req.params.id).emit("partido_actualizado", partidoPoblado);
+    // 3. 🔥 ESTO ES LO QUE TE FALTA: Emitir a TODOS (para la lista general)
+    io.emit('partido_actualizado', partidoPoblado);
     res.json(partido);
   }
 
@@ -40,6 +54,6 @@ export class PartidoController {
     const partido = await PartidoService.finalizarPartido(req.params.id);
     res.json(partido);
   }
-  
-  
+
+
 }
