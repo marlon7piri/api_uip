@@ -68,7 +68,10 @@ export interface IPartido extends Document {
   resultado: {
     golesLocal: number;
     golesVisitante: number;
+  
   };
+  jornada?: number; // Nueva: Para orden cronológico en torneos
+  jugadoresVinculados: mongoose.Types.ObjectId[]; // Nueva: Jugadores activos en este partido
 }
 
 /* =======================
@@ -106,7 +109,10 @@ const partidoSchema = new Schema<IPartido>(
         golesVisitante: 0,
       }),
     },
+    jornada: { type: Number, default: 1 },
+    jugadoresVinculados: [{ type: Schema.Types.ObjectId, ref: 'jugadore' }],
   },
+  
   { timestamps: true }
 );
 

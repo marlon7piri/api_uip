@@ -18,7 +18,30 @@ export class PartidoService {
     return ProximoPartido.find()
       .populate("local visitante torneoId cancha");
   }
+// Listar partidos por torneo
+  static async listarPorTorneo(torneoId: string) {
+    return await ProximoPartido.find({ torneoId })
+      .populate('local visitante', 'nombre logo')
+      .sort({ jornada: 1, fecha: 1 });
+  }
 
+  // Vincular jugador al partido
+  static async vincularJugador(partidoId: string, jugadorId: string) {
+    return await ProximoPartido.findByIdAndUpdate(
+      partidoId,
+      { $addToSet: { jugadoresVinculados: jugadorId } }, // Evita duplicados
+      { new: true }
+    );
+  }
+
+  // Obtener jugadores aptos para eventos (goles, tarjetas)
+  static async obtenerJugadoresAptos(partidoId: string) {
+    const partido = await ProximoPartido.findById(partidoId).populate({
+      path: 'jugadoresVinculados',
+      select: 'nombre posicion equipoId' // Ajusta según tu modelo de Jugador
+    });
+    return partido?.jugadoresVinculados || [];
+  }
   static async listarPartidosAmistosos(autorId: string) {
     return ProximoPartido.find({tipo:'amistoso'})
       .populate("local visitante  cancha");

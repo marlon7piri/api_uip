@@ -32,7 +32,7 @@ const jugadorSchema: Schema<IJugador> = new Schema(
     nombre: { type: String, required: true },
     edad: { type: Number },
     estatura: { type: Number },
-    foto: { type: String},
+    foto: { type: String },
     estadisticasGlobales: {
       goles: { type: Number, default: 0 },
       asistencias: { type: Number, default: 0 },
@@ -41,14 +41,15 @@ const jugadorSchema: Schema<IJugador> = new Schema(
       tarjetas_rojas: { type: Number, default: 0 },
     },
     rol: [{ type: String, default: "jugador" }],
-    userId: { type: String},
+    userId: { type: String },
     club: { type: mongoose.Schema.Types.ObjectId, ref: "equipo" },
   },
   {
     timestamps: true,
   }
 );
-
+// 🔥 CREAR EL ÍNDICE DE TEXTO PARA BÚSQUEDA POR NOMBRE Y APELLIDO
+jugadorSchema.index({ nombre: 'text' });
 const Jugador: Model<IJugador> = mongoose.model<IJugador>("jugadore", jugadorSchema);
 
 export default Jugador;

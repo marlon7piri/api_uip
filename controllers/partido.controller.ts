@@ -17,27 +17,54 @@ export class PartidoController {
   }
 
   static async listar(req: Request, res: Response) {
-    const partidos = await PartidoService.listarPartidos(req.user.userid);
-    res.json(partidos);
+    try {
+      const { idTorneo } = req.params;
+      const partidos = await PartidoService.listarPorTorneo(idTorneo);
+      res.json(partidos);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+
+  static async unirJugador(req: Request, res: Response) {
+    try {
+      const { idPartido } = req.params;
+      const { idJugador } = req.body;
+      const actualizado = await PartidoService.vincularJugador(idPartido, idJugador);
+      res.json({ message: "Jugador unido al partido", partido: actualizado });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+
+  static async listarJugadoresParaEvento(req: Request, res: Response) {
+    try {
+      const { idPartido } = req.params;
+      const jugadores = await PartidoService.obtenerJugadoresAptos(idPartido);
+      res.json(jugadores);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
   }
   static async listarAmistosos(req: Request, res: Response) {
     const partidos = await PartidoService.listarPartidosAmistosos(req.user.userid);
     res.json(partidos);
   }
 
-  static async obtener(req: Request, res: Response) {
+  static async obtener(req: Request, res: Response):Promise<any> {
     const partido = await PartidoService.obtenerPorId(req.params.id);
     if (!partido) return res.status(404).json({ message: "No encontrado" });
     res.json(partido);
   }
 
   static async evento(req: Request, res: Response) {
-    const { jugadorId, equipo, tipo } = req.body;
+    const { jugadorId, equipo, tipo, minuto } = req.body;
     const partido = await PartidoService.registrarEvento(
       req.params.id,
       jugadorId,
       equipo,
-      tipo
+      tipo, 
+      minuto
     );
 
     const partidoPoblado = await partido.populate("local visitante torneoId cancha eventos.jugador");

@@ -6,8 +6,40 @@ export class JugadorService {
     return Jugador.create(data);
   }
 
-  static async listarJugadores(autorId: string) {
-    return Jugador.find({ autorId }).populate("club");
+  static async listarJugadoresPaginados(query: {
+    page?: number;
+    limit?: number;
+    search?: string;
+  }) {
+    const { page = 1, limit = 20, search = "" } = query;
+    
+    const pageNumber = Number(page);
+    const limitNumber = Number(limit);
+    const skip = (pageNumber - 1) * limitNumber;
+
+    let filter: any = {};
+
+    // 🔥 Aplicamos la lógica de búsqueda por texto
+    if (search) {
+      filter.$text = { $search: search };
+    }
+
+    // Ejecutamos la consulta
+    const jugadores = await Jugador.find(filter)
+      .sort(search ? { score: { $meta: "textScore" } } : { createdAt: -1 })
+      .skip(skip)
+      .limit(limitNumber)
+      .populate("club") // Poblamos el club para las cards
+      .lean();
+
+    const total = await Jugador.countDocuments(filter);
+
+    return {
+      page: pageNumber,
+      totalPages: Math.ceil(total / limitNumber),
+      total,
+      data: jugadores
+    };
   }
 
   static async obtenerJugadorPorId(id: string) {
