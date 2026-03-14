@@ -26,7 +26,7 @@ export class PartidoService {
 
   static async obtenerPorId(id: string) {
     return ProximoPartido.findById(id)
-      .populate("local visitante torneoId cancha");
+      .populate("local visitante torneoId cancha eventos.jugador");
   }
 
   /* =========================

@@ -26,7 +26,6 @@ export class PartidoController {
   }
 
   static async obtener(req: Request, res: Response) {
-    console.log(req.params.id)
     const partido = await PartidoService.obtenerPorId(req.params.id);
     if (!partido) return res.status(404).json({ message: "No encontrado" });
     res.json(partido);
@@ -41,7 +40,7 @@ export class PartidoController {
       tipo
     );
 
-    const partidoPoblado = await partido.populate("local visitante torneoId cancha");
+    const partidoPoblado = await partido.populate("local visitante torneoId cancha eventos.jugador");
 
     // .to(id) envía el mensaje solo a los que están en esa sala
     io.to(req.params.id).emit("partido_actualizado", partidoPoblado);
