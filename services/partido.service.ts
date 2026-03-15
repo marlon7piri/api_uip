@@ -101,6 +101,7 @@ export class PartidoService {
 
   static async finalizarPartido(partidoId: string) {
     const partido = await ProximoPartido.findById(partidoId);
+
     if (!partido) throw new Error("Partido no encontrado");
 
     if (partido.estado === "finalizado") {

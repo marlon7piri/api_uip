@@ -36,7 +36,7 @@ export class EquipoController {
     }
   }
 
-  static async obtenerPorId(req: Request, res: Response) {
+  static async obtenerPorId(req: Request, res: Response):Promise<any> {
     const equipo = await EquipoService.obtenerEquipoPorId(req.params.id);
     if (!equipo) return res.status(404).json({ message: "Equipo no encontrado" });
     res.json(equipo);

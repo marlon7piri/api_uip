@@ -51,7 +51,7 @@ export class PartidoController {
     res.json(partidos);
   }
 
-  static async obtener(req: Request, res: Response):Promise<any> {
+  static async obtener(req: Request, res: Response): Promise<any> {
     const partido = await PartidoService.obtenerPorId(req.params.id);
     if (!partido) return res.status(404).json({ message: "No encontrado" });
     res.json(partido);
@@ -63,7 +63,7 @@ export class PartidoController {
       req.params.id,
       jugadorId,
       equipo,
-      tipo, 
+      tipo,
       minuto
     );
 
@@ -77,8 +77,15 @@ export class PartidoController {
   }
 
   static async finalizar(req: Request, res: Response) {
-    const partido = await PartidoService.finalizarPartido(req.params.id);
-    res.json(partido);
+    const idPartido  = req.params.id;
+    console.log({idPartidoAFinalizar:idPartido})
+
+    const partido = await PartidoService.finalizarPartido(idPartido);
+    const partidoPoblado = await partido.populate("local visitante torneoId cancha eventos.jugador");
+
+    // IMPORTANTE: Emitir por socket para que todos vean que terminó
+    io.emit("partido_actualizado", partidoPoblado);
+    res.json(partidoPoblado);
   }
 
 

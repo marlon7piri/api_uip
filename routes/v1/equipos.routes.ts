@@ -3,10 +3,10 @@ import { EquipoController } from "../../controllers/equipo.controller";
 
 const router = Router();
 
-router.post("/", EquipoController.crear);
-router.get("/", EquipoController.listar);
-router.get("/:id", EquipoController.obtenerPorId);
-router.put("/:id", EquipoController.actualizar);
-router.delete("/:id", EquipoController.eliminar);
+router.post("/",(req,res)=> EquipoController.crear(req,res));
+router.get("/",(req,res)=> EquipoController.listar(req,res));
+router.get("/:id",(req,res)=> EquipoController.obtenerPorId(req,res));
+router.put("/:id",(req,res)=> EquipoController.actualizar(req,res));
+router.delete("/:id",(req,res)=> EquipoController.eliminar(req,res));
 
 export default router;

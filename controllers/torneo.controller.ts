@@ -7,7 +7,7 @@ export class TorneoController {
   /* =========================
      CREAR TORNEO
   ========================= */
-  static async crear(req: Request, res: Response) {
+  static async crear(req: Request, res: Response):Promise<any> {
     try {
       const { fechaInicio } = req.body;
 
@@ -33,7 +33,7 @@ export class TorneoController {
   /* =========================
      LISTAR TORNEOS
   ========================= */
-  static async listar(req: Request, res: Response) {
+  static async listar(req: Request, res: Response):Promise<any> {
     try {
       const {
         page = 1,
@@ -76,7 +76,7 @@ export class TorneoController {
      AGREGAR EQUIPO
      (liga o grupo)
   ========================= */
-  static async agregarEquipo(req: Request, res: Response) {
+  static async agregarEquipo(req: Request, res: Response) :Promise<any>{
     try {
       const { equipoId, grupo } = req.body;
       
@@ -92,7 +92,7 @@ export class TorneoController {
     }
   }
 
-  static async equipos(req: Request, res: Response) {
+  static async equipos(req: Request, res: Response):Promise<any> {
     const equipos = await TorneoService.obtenerEquipos(req.params.id);
     res.json(equipos);
   }
@@ -111,7 +111,7 @@ export class TorneoController {
   /* =========================
      CREAR GRUPOS
   ========================= */
-  static async crearGrupos(req: Request, res: Response) {
+  static async crearGrupos(req: Request, res: Response):Promise<any> {
     const { cantidadGrupos } = req.body;
 
     await TorneoService.crearGrupos(
