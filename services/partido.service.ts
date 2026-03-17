@@ -44,8 +44,8 @@ export class PartidoService {
   }
   static async listarPartidosAmistosos(autorId: string) {
     return ProximoPartido.find({tipo:'amistoso'})
-      .populate("local visitante  cancha");
-  }ß
+      .populate("local visitante","nombre logo");
+  }
 
   static async obtenerPorId(id: string) {
     return ProximoPartido.findById(id)

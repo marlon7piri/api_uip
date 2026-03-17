@@ -13,7 +13,7 @@ const isValidEmail = (email: string) => {
 };
 
 const create = async (req: Request, res: Response): Promise<any> => {
-  const {  email, password,nombre ,username} =
+  const { email, password, nombre, username } =
     req.body;
   try {
     const emailUser = await Users.findOne({ email });
@@ -25,7 +25,7 @@ const create = async (req: Request, res: Response): Promise<any> => {
     }
 
 
-   
+
     const userInstance = new Users({
       nombre,
       username,
@@ -108,7 +108,7 @@ const login = async (req: Request, res: Response): Promise<any> => {
   const { username, password } = req.body;
 
   try {
-    const userData = await Users.findOne({username });
+    const userData = await Users.findOne({ username });
 
     if (!userData) {
       return res.status(404).send({
@@ -127,12 +127,12 @@ const login = async (req: Request, res: Response): Promise<any> => {
     const match = await userData.matchPassword(password);
 
 
-    
+
     if (!match) {
       return res.status(401).json({ message: "Incorrect password" });
     }
 
-    const {  _id } = userData;
+    const { _id } = userData;
     const token = tokenGenerator({ _id });
 
     const tokensInstance = new Tokens({
@@ -140,13 +140,14 @@ const login = async (req: Request, res: Response): Promise<any> => {
       active: true,
     });
     await tokensInstance.save();
-
+    const { password: _, ...userWithoutPassword } = userData.toObject();
+    
     return res.send({
       status: "success",
-      message: "Welcome!",
-      data: userData,
+      data: userWithoutPassword,
       token,
     });
+
   } catch (e) {
     console.error("Login error:", e);
     return res.status(e.code || 500).json({

@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import { TorneoService } from "../services/torneo.service";
 import Torneo from "models/Torneo.models";
+import mongoose from "mongoose";
+import Partido from "models/partido.models";
 
 export class TorneoController {
 
@@ -121,6 +123,74 @@ export class TorneoController {
 
     res.json({ message: "Grupos creados correctamente" });
   }
+static async obtenerGoleadores(req: Request, res: Response): Promise<any> {
+  try {
+    const { id } = req.params; // ID del Torneo
 
+    
+
+    const goleadores = await Partido.aggregate([
+      // 1. Filtramos solo los partidos de este torneo
+      { $match: { torneoId: new mongoose.Types.ObjectId(id) } },
+      
+      // 2. Descomponemos el array de eventos
+      { $unwind: "$eventos" },
+      
+      // 3. Filtramos solo los eventos que sean 'gol'
+      { $match: { "eventos.tipo": "gol" } },
+      
+      // 4. Agrupamos por jugador
+      {
+        $group: {
+          _id: "$eventos.jugador",
+          goles: { $sum: 1 },
+          equipoId: { $first: "$eventos.equipo" } // Guardamos el ID del equipo
+        }
+      },
+
+      // 5. Unimos con la colección de Jugadores para traer el nombre
+      {
+        $lookup: {
+          from: "jugadores", // Nombre de tu colección en DB
+          localField: "_id",
+          foreignField: "_id",
+          as: "infoJugador"
+        }
+      },
+      { $unwind: "$infoJugador" },
+
+      // 6. Unimos con la colección de Equipos para traer el nombre del equipo
+      {
+        $lookup: {
+          from: "equipos",
+          localField: "equipoId",
+          foreignField: "_id",
+          as: "infoEquipo"
+        }
+      },
+      { $unwind: "$infoEquipo" },
+
+      // 7. Proyectamos el resultado final limpio
+      {
+        $project: {
+          _id: 0,
+          jugadorId: "$_id",
+          nombre: "$infoJugador.nombre",
+          equipo: "$infoEquipo.nombre",
+          goles: 1
+        }
+      },
+
+      // 8. Ordenamos de mayor a menor
+      { $sort: { goles: -1 } }
+    ]);
+
+    console.log(goleadores)
+    return res.json(goleadores);
+  } catch (error) {
+    console.error("Error en agregación de goleadores:", error);
+    return res.status(500).json({ message: "Error al calcular goleadores" });
+  }
+}
 
 }

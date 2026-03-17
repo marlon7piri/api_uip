@@ -47,8 +47,13 @@ export class PartidoController {
     }
   }
   static async listarAmistosos(req: Request, res: Response) {
-    const partidos = await PartidoService.listarPartidosAmistosos(req.user.userid);
-    res.json(partidos);
+    try {
+      const partidos = await PartidoService.listarPartidosAmistosos(req.user.userid);
+      res.json(partidos);
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+
   }
 
   static async obtener(req: Request, res: Response): Promise<any> {
@@ -77,8 +82,8 @@ export class PartidoController {
   }
 
   static async finalizar(req: Request, res: Response) {
-    const idPartido  = req.params.id;
-    console.log({idPartidoAFinalizar:idPartido})
+    const idPartido = req.params.id;
+    console.log({ idPartidoAFinalizar: idPartido })
 
     const partido = await PartidoService.finalizarPartido(idPartido);
     const partidoPoblado = await partido.populate("local visitante torneoId cancha eventos.jugador");
