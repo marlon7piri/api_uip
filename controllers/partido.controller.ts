@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import { PartidoService } from "../services/partido.service";
 import { io } from "app";
+import Partido from "models/partido.models";
+import { TorneoService } from "services/torneo.service";
 
 export class PartidoController {
   static async crear(req: Request, res: Response) {
@@ -81,9 +83,33 @@ export class PartidoController {
     res.json(partido);
   }
 
+static async actualizarEventos(req: Request, res: Response): Promise<any> {
+  try {
+    const { id } = req.params;
+    const { eventos } = req.body;
+
+    const partido = await Partido.findById(id);
+    if (!partido) return res.status(404).json({ message: "Partido no encontrado" });
+
+    partido.eventos = eventos;
+    await partido.save(); // El middleware recalcula el marcador (golesLocal/Visitante)
+
+    // 🔥 SI EL PARTIDO ESTÁ FINALIZADO O ES DE TORNEO, RECALCULAMOS TABLA
+    if (partido.torneoId) {
+      await TorneoService.recalcularTabla(partido.torneoId.toString());
+    }
+
+    const partidoPoblado = await partido.populate("local visitante torneoId cancha eventos.jugador");
+    io.emit('partido_actualizado', partidoPoblado);
+    io.emit('tabla_actualizada', { torneoId: partido.torneoId }); // Avisar al front que la tabla cambió
+
+    return res.json(partidoPoblado);
+  } catch (error) {
+    return res.status(500).json({ message: "Error al sincronizar" });
+  }
+}
   static async finalizar(req: Request, res: Response) {
     const idPartido = req.params.id;
-    console.log({ idPartidoAFinalizar: idPartido })
 
     const partido = await PartidoService.finalizarPartido(idPartido);
     const partidoPoblado = await partido.populate("local visitante torneoId cancha eventos.jugador");

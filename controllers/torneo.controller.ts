@@ -185,7 +185,6 @@ static async obtenerGoleadores(req: Request, res: Response): Promise<any> {
       { $sort: { goles: -1 } }
     ]);
 
-    console.log(goleadores)
     return res.json(goleadores);
   } catch (error) {
     console.error("Error en agregación de goleadores:", error);

@@ -4,7 +4,10 @@ import Tokens from "../models/Tokens.models";
 import jwt from "jsonwebtoken";
 import Users from "../models/User.models";
 import { crearJugadorInicial } from "../utils/crearJugadorInicial";
+import crypto from "crypto"; // Módulo nativo de Node.js
+
 import Jugador from "models/Jugador.models";
+import { transporter } from "config/mailer";
 
 const isValidEmail = (email: string) => {
   const patron = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
@@ -12,6 +15,82 @@ const isValidEmail = (email: string) => {
   return patron.test(email);
 };
 
+const forgotPassword = async (req: Request, res: Response): Promise<any> => {
+  const { email } = req.body;
+
+  try {
+    const user = await Users.findOne({ email });
+    if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
+
+    // 1. Generar Token
+    const token = crypto.randomBytes(20).toString('hex');
+    user.resetPasswordToken = token;
+    user.resetPasswordExpires = new Date(Date.now() + 3600000); // 1 hora
+    await user.save();
+
+    // En tu controlador de Node.js
+    const isDev = process.env.NODE_ENV === 'development';
+
+    const resetLink = isDev
+      ? `exp://192.168.0.8:8081/--/reset-password?token=${token}`
+      : `ligastotal2://reset-password?token=${token}`;
+
+    await transporter.sendMail({
+      from: '"Soporte Técnico ⚽" <soporte@torneosapp.com>',
+      to: user.email,
+      subject: "Recuperación de contraseña",
+      html: `
+        <div style="font-family: sans-serif; padding: 20px;">
+          <h2>Restablece tu contraseña</h2>
+          <p>Hola ${user.nombre}, recibimos una solicitud para cambiar tu clave.</p>
+          <p>Usa el siguiente enlace para crear una nueva:</p>
+          <a href="${resetLink}" style="display: inline-block; padding: 10px 20px; background-color: #00D7C4; color: #000; text-decoration: none; border-radius: 5px;">
+            Cambiar contraseña
+          </a>
+          <p>Si no fuiste tú, ignora este mensaje.</p>
+        </div>
+      `
+    });
+
+    return res.json({ status: "success", message: "Revisa tu bandeja de entrada en Mailtrap" });
+
+  } catch (error) {
+    console.error("Error en forgotPassword:", error);
+    return res.status(500).json({ message: "Error al procesar la solicitud" });
+  }
+};
+const confirmResetPassword = async (req: Request, res: Response): Promise<any> => {
+  const { token, newPassword } = req.body;
+
+  console.log({ token, newPassword })
+  try {
+    // Buscar usuario con el token y que no haya expirado
+    const user = await Users.findOne({
+      resetPasswordToken: token,
+      resetPasswordExpires: { $gt: new Date() } // $gt = mayor que ahora
+    });
+
+    if (!user) {
+      return res.status(400).json({
+        status: "error",
+        message: "El token es inválido o ha expirado"
+      });
+    }
+
+    // Encriptar y guardar nueva contraseña
+    user.password = await user.encryptPassword(newPassword);
+
+    // Limpiar campos de recuperación
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+    console.log(user)
+    await user.save();
+
+    return res.json({ status: "success", message: "Contraseña actualizada correctamente" });
+  } catch (error) {
+    return res.status(500).json({ status: "error", message: "Error interno" });
+  }
+};
 const create = async (req: Request, res: Response): Promise<any> => {
   const { email, password, nombre, username } =
     req.body;
@@ -141,7 +220,7 @@ const login = async (req: Request, res: Response): Promise<any> => {
     });
     await tokensInstance.save();
     const { password: _, ...userWithoutPassword } = userData.toObject();
-    
+
     return res.send({
       status: "success",
       data: userWithoutPassword,
@@ -268,6 +347,8 @@ const deleteUser = async (req: Request, res: Response): Promise<any> => {
 
 export {
   create,
+  forgotPassword,
+  confirmResetPassword,
   login,
   listUsers,
   logout,

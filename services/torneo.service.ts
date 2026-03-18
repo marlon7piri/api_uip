@@ -4,6 +4,7 @@ import { EquipoTorneoDTO } from "dtos/equipo.dto";
 import { GrupoDTO } from "dtos/grupo.dto";
 import { TorneoResponseDTO } from "dtos/torneo.dto";
 import { ordenarTabla } from "utils/ordenarTabla.helper";
+import Partido from "models/partido.models";
 
 export class TorneoService {
 
@@ -252,5 +253,70 @@ export class TorneoService {
   ========================= */
 
   return await this.obtenerTorneoCompleto(torneoId);
+}
+
+// services/torneo.service.ts
+
+static async recalcularTabla(torneoId: string) {
+  const torneo = await Torneo.findById(torneoId);
+  if (!torneo) throw new Error("Torneo no encontrado");
+
+  const partidosFinalizados = await Partido.find({ 
+    torneoId: torneo._id, 
+    estado: 'finalizado' 
+  });
+
+  // 1. Inicializamos stats para TODOS los equipos del torneo
+  const stats: Record<string, any> = {};
+  torneo.equipos.forEach(id => {
+    stats[id.toString()] = { 
+      puntos: 0, partidos_jugados: 0, goles_favor: 0, goles_contra: 0, 
+      partidos_ganados: 0, partidos_empatados: 0, partidos_perdidos: 0, asistencias: 0 
+    };
+  });
+
+  // 2. Procesar partidos y acumular
+  partidosFinalizados.forEach(p => {
+    const loc = p.local.toString();
+    const vis = p.visitante.toString();
+    const gl = p.resultado.golesLocal;
+    const gv = p.resultado.golesVisitante;
+
+    if (!stats[loc] || !stats[vis]) return; // Seguridad
+
+    stats[loc].partidos_jugados += 1;
+    stats[loc].goles_favor += gl;
+    stats[loc].goles_contra += gv;
+
+    stats[vis].partidos_jugados += 1;
+    stats[vis].goles_favor += gv;
+    stats[vis].goles_contra += gl;
+
+    if (gl > gv) {
+      stats[loc].puntos += 3;
+      stats[loc].partidos_ganados += 1;
+      stats[vis].partidos_perdidos += 1;
+    } else if (gv > gl) {
+      stats[vis].puntos += 3;
+      stats[vis].partidos_ganados += 1;
+      stats[loc].partidos_perdidos += 1;
+    } else {
+      stats[loc].puntos += 1;
+      stats[vis].puntos += 1;
+      stats[loc].partidos_empatados += 1;
+      stats[vis].partidos_empatados += 1;
+    }
+  });
+
+  // 3. 🔥 PERSISTENCIA: Actualizar cada equipo en la DB
+  const promesas = Object.keys(stats).map(equipoId => {
+    return Equipo.updateOne(
+      { _id: equipoId, "torneos.torneoId": torneo._id },
+      { $set: { "torneos.$.estadisticas": stats[equipoId] } }
+    );
+  });
+
+  await Promise.all(promesas);
+  return { success: true };
 }
 }

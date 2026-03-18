@@ -7,12 +7,14 @@ type TypePlan = "premium" | "free";
 
 // Interfaz para el documento de usuario
 export interface IUser extends Document {
-  username:string;
+  username: string;
   nombre: string;
   email: string;
   password: string;
   rol: Rol;
   status: "activo" | "inactivo";
+  resetPasswordToken: string
+  resetPasswordExpires: Date;
   plan: TypePlan;
   createdAt?: Date; // Generado automáticamente por `timestamps`
   updatedAt?: Date; // Generado automáticamente por `timestamps`
@@ -29,12 +31,14 @@ const userSchema: Schema<IUser> = new Schema(
     nombre: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    rol: { type: String, required: true,default:"client" },
+    rol: { type: String, required: true, default: "client" },
     plan: {
       type: String,
       default: "free",
     },
     status: { type: String, default: "activo" },
+    resetPasswordToken: { type: String },
+    resetPasswordExpires: { type: Date }
   },
   { timestamps: true }
 );
