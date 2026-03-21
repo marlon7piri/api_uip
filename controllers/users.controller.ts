@@ -62,7 +62,6 @@ const forgotPassword = async (req: Request, res: Response): Promise<any> => {
 const confirmResetPassword = async (req: Request, res: Response): Promise<any> => {
   const { token, newPassword } = req.body;
 
-  console.log({ token, newPassword })
   try {
     // Buscar usuario con el token y que no haya expirado
     const user = await Users.findOne({
@@ -208,7 +207,7 @@ const login = async (req: Request, res: Response): Promise<any> => {
 
 
     if (!match) {
-      return res.status(401).json({ message: "Incorrect password" });
+      return res.status(404).json({ message: "Incorrect password" });
     }
 
     const { _id } = userData;

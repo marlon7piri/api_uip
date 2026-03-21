@@ -1,4 +1,5 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
+import { recalcularEstadisticasDesdePartidos } from "utils/recalcularEstadisticasPartidos";
 
 /* =======================
    TIPOS
@@ -68,7 +69,7 @@ export interface IPartido extends Document {
   resultado: {
     golesLocal: number;
     golesVisitante: number;
-  
+
   };
   jornada?: number; // Nueva: Para orden cronológico en torneos
   jugadoresVinculados: mongoose.Types.ObjectId[]; // Nueva: Jugadores activos en este partido
@@ -112,7 +113,7 @@ const partidoSchema = new Schema<IPartido>(
     jornada: { type: Number, default: 1 },
     jugadoresVinculados: [{ type: Schema.Types.ObjectId, ref: 'jugadore' }],
   },
-  
+
   { timestamps: true }
 );
 
@@ -136,6 +137,29 @@ partidoSchema.pre('save', function (next) {
   this.resultado.golesVisitante = golesVisitante;
 
   next();
+});
+/* =======================
+   MIDDLEWARES POST-SAVE / POST-DELETE
+======================= */
+
+// Cuando se crea o actualiza un partido (se añaden/quitan goles)
+partidoSchema.post('save', async function (doc) {
+  // Obtenemos todos los IDs de jugadores que están en los eventos para actualizarlos a todos
+  const jugadorIds = [...new Set(doc.eventos.map(e => e.jugador.toString()))];
+
+  for (const id of jugadorIds) {
+    await recalcularEstadisticasDesdePartidos(id);
+  }
+});
+
+// Cuando se elimina un partido completo
+partidoSchema.post('findOneAndDelete', async function (doc) {
+  if (doc && doc.eventos) {
+    const jugadorIds = [...new Set(doc.eventos.map(e => e.jugador.toString()))];
+    for (const id of jugadorIds) {
+      await recalcularEstadisticasDesdePartidos(id);
+    }
+  }
 });
 
 /* =======================
