@@ -175,4 +175,40 @@ export class PartidoService {
       );
     }
   }
+
+  static async obtenerJugadoresPorPartidoService(partidoId: string) {
+  const partido = await ProximoPartido.findById(partidoId)
+    .select("local visitante")
+    .lean();
+
+  if (!partido) throw new Error("Partido no encontrado");
+
+  // Buscamos jugadores cuyo club sea el equipo local o visitante
+  const jugadores = await Jugador.find({
+    club: { $in: [partido.local, partido.visitante] },
+  })
+    .select("nombre")
+    .populate("club", "nombre logo")
+    .lean();
+
+  // Separamos por equipo para que el frontend sepa a cuál pertenece cada uno
+  const local = jugadores.filter(
+    (j) => j.club._id.toString() === partido.local.toString()
+  );
+
+  const visitante = jugadores.filter(
+    (j) => j.club._id.toString() === partido.visitante.toString()
+  );
+
+  return {
+    local: {
+      equipoId: partido.local,
+      jugadores: local,
+    },
+    visitante: {
+      equipoId: partido.visitante,
+      jugadores: visitante,
+    },
+  };
+}
 }

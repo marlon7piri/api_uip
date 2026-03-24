@@ -7,7 +7,7 @@ const router = Router();
 router.post("/", (req, res) => JugadorController.crear(req, res));
 router.get("/", (req, res) => JugadorController.listar(req, res));
 router.get("/:id", (req, res) => JugadorController.obtenerPorId(req, res));
-router.put("/:id", (req, res) => JugadorController.actualizar(req, res));
+router.patch("/:id", (req, res) => JugadorController.actualizar(req, res));
 router.delete("/:id", (req, res) => JugadorController.eliminar(req, res));
 
 export default router;

@@ -1,3 +1,4 @@
+import Partido from "models/partido.models";
 import Jugador, { IJugador } from "../models/Jugador.models";
 import mongoose from "mongoose";
 
@@ -48,7 +49,7 @@ export class JugadorService {
   }
 
   static async actualizarJugador(id: string, data: Partial<IJugador>) {
-    return Jugador.findByIdAndUpdate(id, data, { new: true });
+    return Jugador.findByIdAndUpdate(id, data, { new: true }).populate('club');
   }
 
   static async eliminarJugador(id: string) {

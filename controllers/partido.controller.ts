@@ -83,31 +83,31 @@ export class PartidoController {
     res.json(partido);
   }
 
-static async actualizarEventos(req: Request, res: Response): Promise<any> {
-  try {
-    const { id } = req.params;
-    const { eventos } = req.body;
+  static async actualizarEventos(req: Request, res: Response): Promise<any> {
+    try {
+      const { id } = req.params;
+      const { eventos } = req.body;
 
-    const partido = await Partido.findById(id);
-    if (!partido) return res.status(404).json({ message: "Partido no encontrado" });
+      const partido = await Partido.findById(id);
+      if (!partido) return res.status(404).json({ message: "Partido no encontrado" });
 
-    partido.eventos = eventos;
-    await partido.save(); // El middleware recalcula el marcador (golesLocal/Visitante)
+      partido.eventos = eventos;
+      await partido.save(); // El middleware recalcula el marcador (golesLocal/Visitante)
 
-    // 🔥 SI EL PARTIDO ESTÁ FINALIZADO O ES DE TORNEO, RECALCULAMOS TABLA
-    if (partido.torneoId) {
-      await TorneoService.recalcularTabla(partido.torneoId.toString());
+      // 🔥 SI EL PARTIDO ESTÁ FINALIZADO O ES DE TORNEO, RECALCULAMOS TABLA
+      if (partido.torneoId) {
+        await TorneoService.recalcularTabla(partido.torneoId.toString());
+      }
+
+      const partidoPoblado = await partido.populate("local visitante torneoId cancha eventos.jugador");
+      io.emit('partido_actualizado', partidoPoblado);
+      io.emit('tabla_actualizada', { torneoId: partido.torneoId }); // Avisar al front que la tabla cambió
+
+      return res.json(partidoPoblado);
+    } catch (error) {
+      return res.status(500).json({ message: "Error al sincronizar" });
     }
-
-    const partidoPoblado = await partido.populate("local visitante torneoId cancha eventos.jugador");
-    io.emit('partido_actualizado', partidoPoblado);
-    io.emit('tabla_actualizada', { torneoId: partido.torneoId }); // Avisar al front que la tabla cambió
-
-    return res.json(partidoPoblado);
-  } catch (error) {
-    return res.status(500).json({ message: "Error al sincronizar" });
   }
-}
   static async finalizar(req: Request, res: Response) {
     const idPartido = req.params.id;
 
@@ -118,6 +118,18 @@ static async actualizarEventos(req: Request, res: Response): Promise<any> {
     io.emit("partido_actualizado", partidoPoblado);
     res.json(partidoPoblado);
   }
+  static async jugadoresPorPartido(req: Request, res: Response): Promise<any> {
+    try {
+      const { id } = req.params; // partidoId
+      const resultado = await PartidoService.obtenerJugadoresPorPartidoService(id);
+      if (resultado) res.json(resultado);
+      else {
+        return res.status(404).json({ message: 'Partido no encontrado' });
+      }
 
+    } catch (error: any) {
+      return res.status(500).json({ error: error.message });
+    }
+  }
 
 }

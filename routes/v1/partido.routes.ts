@@ -19,5 +19,6 @@ router.get("/:idPartido/jugadores-aptos", PartidoController.listarJugadoresParaE
 router.post("/:id/evento", PartidoController.evento);
 router.put("/:id/eventos", PartidoController.actualizarEventos);
 router.post("/:id/finalizar", PartidoController.finalizar);
+router.get("/:id/jugadores-partido", PartidoController.jugadoresPorPartido);
 
 export default router;
