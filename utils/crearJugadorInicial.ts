@@ -1,4 +1,4 @@
-import Jugador from "models/Jugador.models";
+import Jugador from "../models/Jugador.models";
 import { Types } from "mongoose";
 
 export const crearJugadorInicial = async (data: any) => {

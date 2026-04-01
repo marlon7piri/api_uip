@@ -1,5 +1,5 @@
-import Jugador from "models/Jugador.models";
-import Partido from "models/partido.models";
+import Jugador from "../models/Jugador.models";
+import Partido from "../models/partido.models";
 import mongoose from "mongoose";
 
 

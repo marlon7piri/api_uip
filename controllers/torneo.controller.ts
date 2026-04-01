@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import { TorneoService } from "../services/torneo.service";
-import Torneo from "models/Torneo.models";
+import Torneo from "../models/Torneo.models";
 import mongoose from "mongoose";
-import Partido from "models/partido.models";
+import Partido from "../models/partido.models";
 
 export class TorneoController {
 

@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import { JugadorService } from "../services/jugador.service";
-import { PartidoService } from "services/partido.service";
 
 export class JugadorController {
   static async crear(req: Request, res: Response) {

@@ -5,7 +5,7 @@ import equipos from "./v1/equipos.routes";
 import jugadores from "./v1/jugador.routes";
 import matcher from "./v1/partido.routes";
 import checkout from "./v1/checkout.routes";
-import { isAuth } from "middleware/auth";
+import { isAuth } from "../middleware/auth";
 
 export default (app: Express) => {
   app.use("/api/v1/users", users);

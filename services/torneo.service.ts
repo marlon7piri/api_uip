@@ -1,10 +1,10 @@
 import Torneo, { ITorneo } from "../models/Torneo.models";
 import Equipo from "../models/Equipo.models";
-import { EquipoTorneoDTO } from "dtos/equipo.dto";
-import { GrupoDTO } from "dtos/grupo.dto";
-import { TorneoResponseDTO } from "dtos/torneo.dto";
-import { ordenarTabla } from "utils/ordenarTabla.helper";
-import Partido from "models/partido.models";
+import { EquipoTorneoDTO } from "../dtos/equipo.dto";
+import { GrupoDTO } from "../dtos/grupo.dto";
+import { TorneoResponseDTO } from "../dtos/torneo.dto";
+import { ordenarTabla } from "../utils/ordenarTabla.helper";
+import Partido from "../models/partido.models";
 
 export class TorneoService {
 

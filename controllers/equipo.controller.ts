@@ -1,7 +1,5 @@
 import { Request, Response } from "express";
 import { EquipoService } from "../services/equipo.service";
-import mongoose from "mongoose";
-import Equipo from "models/Equipo.models";
 
 export class EquipoController {
   static async crear(req: Request, res: Response) {

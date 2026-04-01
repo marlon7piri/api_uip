@@ -1,9 +1,9 @@
 {
-  "name": "test1",
+  "name": "ligastotalapi",
   "version": "1.0.0",
   "description": "",
   "license": "ISC",
-  "author": "",
+  "author": "Marlon Rodriguez Rivera",
   "type": "commonjs",
   "sourceType": "module",
   "main": "dist/index.js",

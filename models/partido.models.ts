@@ -1,5 +1,5 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
-import { recalcularEstadisticasDesdePartidos } from "utils/recalcularEstadisticasPartidos";
+import { recalcularEstadisticasDesdePartidos } from "../utils/recalcularEstadisticasPartidos";
 
 /* =======================
    TIPOS

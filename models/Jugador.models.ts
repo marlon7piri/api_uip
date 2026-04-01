@@ -1,4 +1,4 @@
-// models/Jugador.models.ts
+
 import mongoose, { Document, Schema, Model } from "mongoose";
 
 interface EstadisticasGlobales {

@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import { PartidoService } from "../services/partido.service";
-import { io } from "app";
-import Partido from "models/partido.models";
-import { TorneoService } from "services/torneo.service";
+import { io } from "../app";
+import Partido from "../models/partido.models";
+import { TorneoService } from "../services/torneo.service";
 
 export class PartidoController {
   static async crear(req: Request, res: Response) {

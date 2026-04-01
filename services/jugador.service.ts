@@ -1,4 +1,3 @@
-import Partido from "models/partido.models";
 import Jugador, { IJugador } from "../models/Jugador.models";
 import mongoose from "mongoose";
 

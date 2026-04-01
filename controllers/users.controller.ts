@@ -6,8 +6,8 @@ import Users from "../models/User.models";
 import { crearJugadorInicial } from "../utils/crearJugadorInicial";
 import crypto from "crypto"; // Módulo nativo de Node.js
 
-import Jugador from "models/Jugador.models";
-import { transporter } from "config/mailer";
+import Jugador from "../models/Jugador.models";
+import { transporter } from "../config/mailer";
 
 const isValidEmail = (email: string) => {
   const patron = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;

@@ -1,4 +1,4 @@
-import User, { IUser } from "models/User.models";
+import User, { IUser } from "../models/User.models";
 import { Request, Response, NextFunction } from "express";
 
 export const findPlanMiddleware = async (
