@@ -1,12 +1,12 @@
 import express from "express";
-import http from 'http'
+//import http from 'http'
 import Routes from "./routes/index.routes";
 import cors from "cors";
 import bodyParser from "body-parser";
 import helmet from "helmet";
 import { rateLimit } from "express-rate-limit";
 import { CORS_ORIGIN } from "./config";
-import { Server } from 'socket.io'
+//import { Server } from 'socket.io'
 
 const app = express();
 //export const server = http.createServer(app)
