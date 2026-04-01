@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { PartidoService } from "../services/partido.service";
-import { io } from "../app";
+//import { io } from "../app";
 import Partido from "../models/partido.models";
 import { TorneoService } from "../services/torneo.service";
 
@@ -12,7 +12,7 @@ export class PartidoController {
     });
     // Poblamos los datos necesarios para que el FlatList lo muestre bien de inmediato
     const partidoPoblado = await partido.populate("local visitante torneoId cancha");
-    io.emit('partido_creado', partidoPoblado)
+    //io.emit('partido_creado', partidoPoblado)
     res.status(201).json(partidoPoblado);
 
 
@@ -77,9 +77,9 @@ export class PartidoController {
     const partidoPoblado = await partido.populate("local visitante torneoId cancha eventos.jugador");
 
     // .to(id) envía el mensaje solo a los que están en esa sala
-    io.to(req.params.id).emit("partido_actualizado", partidoPoblado);
+    //io.to(req.params.id).emit("partido_actualizado", partidoPoblado);
     // 3. 🔥 ESTO ES LO QUE TE FALTA: Emitir a TODOS (para la lista general)
-    io.emit('partido_actualizado', partidoPoblado);
+    //io.emit('partido_actualizado', partidoPoblado);
     res.json(partido);
   }
 
@@ -100,8 +100,8 @@ export class PartidoController {
       }
 
       const partidoPoblado = await partido.populate("local visitante torneoId cancha eventos.jugador");
-      io.emit('partido_actualizado', partidoPoblado);
-      io.emit('tabla_actualizada', { torneoId: partido.torneoId }); // Avisar al front que la tabla cambió
+      //io.emit('partido_actualizado', partidoPoblado);
+      //io.emit('tabla_actualizada', { torneoId: partido.torneoId }); // Avisar al front que la tabla cambió
 
       return res.json(partidoPoblado);
     } catch (error) {
@@ -115,7 +115,7 @@ export class PartidoController {
     const partidoPoblado = await partido.populate("local visitante torneoId cancha eventos.jugador");
 
     // IMPORTANTE: Emitir por socket para que todos vean que terminó
-    io.emit("partido_actualizado", partidoPoblado);
+    //io.emit("partido_actualizado", partidoPoblado);
     res.json(partidoPoblado);
   }
   static async jugadoresPorPartido(req: Request, res: Response): Promise<any> {

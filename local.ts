@@ -1,4 +1,5 @@
-import  { server } from "./app";
+//import  { server } from "./app";
+import app from "./app";
 import { ConnectDb } from "./database";
 import dotenv from "dotenv";
 
@@ -15,17 +16,17 @@ const start = async () => {
     await ConnectDb();
     
     // Cambiamos el orden de los parámetros para mayor claridad
-    server.listen(Number(PORT), "0.0.0.0", () => {
+    app.listen(Number(PORT), "0.0.0.0", () => {
       console.log(`🚀 Server running on http://localhost:${PORT}`); // Usa tu IP local
     });
 
     // Manejo de errores de cierre limpio (evita que el puerto quede ocupado)
-    process.on('SIGINT', () => {
-      server.close(() => {
+    /* process.on('SIGINT', () => {
+      app.close(() => {
         console.log('🛑 Server closed');
         process.exit(0);
       });
-    });
+    }); */
 
   } catch (err) {
     console.error("❌ Failed to start server:", err);

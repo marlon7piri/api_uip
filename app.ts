@@ -9,13 +9,13 @@ import { CORS_ORIGIN } from "./config";
 import { Server } from 'socket.io'
 
 const app = express();
-export const server = http.createServer(app)
-export const io = new Server(server, {
-  cors: { origin: "*", methods: ['GET', 'POST'] },
+//export const server = http.createServer(app)
+/* export const io = new Server(server, {
+  cors: { origin: CORS_ORIGIN, methods: ['GET', 'POST'] },
 
-})
+}) */
 
-io.on("connection", (socket) => {
+/* io.on("connection", (socket) => {
 
   // El usuario avisa que entró al detalle de un partido
   socket.on("join_match", (partidoId) => {
@@ -28,7 +28,7 @@ io.on("connection", (socket) => {
     socket.leave(partidoId);
     console.log(`Usuario ${socket.id} salió del partido: ${partidoId}`);
   });
-});
+}); */
 // Confía en el proxy de Vercel
 app.set("trust proxy", 1);
 
