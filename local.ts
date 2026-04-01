@@ -16,7 +16,7 @@ const start = async () => {
     
     // Cambiamos el orden de los parámetros para mayor claridad
     server.listen(Number(PORT), "0.0.0.0", () => {
-      console.log(`🚀 Server running on http://192.168.0.8:${PORT}`); // Usa tu IP local
+      console.log(`🚀 Server running on http://localhost:${PORT}`); // Usa tu IP local
     });
 
     // Manejo de errores de cierre limpio (evita que el puerto quede ocupado)
