@@ -1,5 +1,5 @@
 //import { server } from "./app";
-import { ConnectDb } from "./database";
+import { ConnectDb } from "./db";
 import { PORT } from "./config";
 import app from "./app";
 
