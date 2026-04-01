@@ -157,7 +157,7 @@ partidoSchema.post('findOneAndDelete', async function (doc) {
   if (doc && doc.eventos) {
     const jugadorIds = [...new Set(doc.eventos.map(e => e.jugador.toString()))];
     for (const id of jugadorIds) {
-      await recalcularEstadisticasDesdePartidos(id);
+      await recalcularEstadisticasDesdePartidos(id as string);
     }
   }
 });

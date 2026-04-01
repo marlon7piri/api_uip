@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
 import { EquipoService } from "../services/equipo.service";
+import mongoose from "mongoose";
+import Equipo from "models/Equipo.models";
 
 export class EquipoController {
   static async crear(req: Request, res: Response) {
@@ -36,11 +38,31 @@ export class EquipoController {
     }
   }
 
-  static async obtenerPorId(req: Request, res: Response):Promise<any> {
-    const equipo = await EquipoService.obtenerEquipoPorId(req.params.id);
-    if (!equipo) return res.status(404).json({ message: "Equipo no encontrado" });
-    res.json(equipo);
+  static async obtenerDetalle(req: Request, res: Response): Promise<any> {
+  try {
+    const { id } = req.params;
+
+    const equipoDetalle = await EquipoService.getEquipoDetalle(id);
+
+    if (!equipoDetalle) {
+      return res.status(404).json({ 
+        status: "error", 
+        message: "Equipo no encontrado o ID no válido" 
+      });
+    }
+
+    res.json({
+      status: "success",
+      data: equipoDetalle
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ 
+      status: "error", 
+      message: "Error al obtener el detalle del equipo" 
+    });
   }
+}
 
   static async actualizar(req: Request, res: Response) {
     const equipo = await EquipoService.actualizarEquipo(
@@ -54,4 +76,7 @@ export class EquipoController {
     await EquipoService.eliminarEquipo(req.params.id);
     res.json({ message: "Equipo eliminado" });
   }
+
+
+
 }
